@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面标题模板 - 科学演示</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="nav-bar">
+        <a href="index.html" class="nav-btn">
+            <span style="font-size: 18px;">←</span> 返回首页
+        </a>
+    </div>
+
+    <h2>页面标题模板</h2>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 示例：控制面板 -->
+        <div class="control-panel">
+            <div class="panel-header">
+                <span class="panel-title">控制面板标题</span>
+                <span class="accel-value" style="font-family: 'SF Mono', monospace; font-size: 28px; font-weight: 700;">100</span>
+            </div>
+            
+            <div class="slider-wrapper">
+                <button class="btn-icon">-</button>
+                <input type="range" min="0" max="100" value="50">
+                <button class="btn-icon">+</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-main btn-primary">主操作按钮</button>
+                <button class="btn-main btn-secondary">次要操作</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 信息展示区域 -->
+    <div class="info-grid">
+        <!-- 信息卡片 1 -->
+        <div class="info-card">
+            <div class="info-title">
+                <div class="dot" style="background: var(--accent-blue)"></div>
+                信息卡片标题 1
+            </div>
+            <div class="info-text">
+                这里是卡片的主要内容描述。可以包含对科学现象的解释或者观察引导。
+            </div>
+            <div class="highlight-box">
+                <strong>核心点：</strong> 这里放置需要强调的关键概念或结论。
+            </div>
+        </div>
+
+        <!-- 信息卡片 2 -->
+        <div class="info-card">
+            <div class="info-title">
+                <div class="dot" style="background: var(--accent-red)"></div>
+                信息卡片标题 2
+            </div>
+            <div class="info-text">
+                第二个卡片的内容。网格布局会自动在宽屏下并排显示，在窄屏下垂直堆叠。
+            </div>
+            <div class="highlight-box">
+                <strong>核心点：</strong> 另一个关键概念。
+            </div>
+        </div>
+
+        <!-- 全宽卡片 -->
+        <div class="info-card full-width">
+            <div class="info-title">
+                <div class="dot" style="background: var(--accent-orange)"></div>
+                扩展信息 / 生活类比
+            </div>
+            <div class="info-text">
+                这是一个跨越两列的全宽卡片，适合放置较长的文本、列表或总结性内容。
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

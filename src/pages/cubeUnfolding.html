@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正方体的11种展开图</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        .category {
+            width: 100%;
+            text-align: left;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .category h2 {
+            color: #007acc;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        .square {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #333;
+            background-color: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            user-select: none;
+        }
+        .explanation {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .net {
+            margin-bottom: 30px;
+        }
+        .empty {
+            width: 40px;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 正方体的 11 种展开图</h1>
+
+        <!-- 1-4-1 型 -->
+        <div class="category">
+            <h2>1. “1-4-1” 型 (6种)</h2>
+            <p>中间一行 4 个正方形，上下各再接出 1 个。</p>
+            <div class="grid">
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 1：上、下都接在第 2 个正方形上。</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 2：上接在第 1 个，下接在第 1 个。</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 3：上接在第 2 个，下接在第 3 个。</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 4：上接在第 3 个，下接在第 1 个。</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 5：上接在第 2 个，下接在第 1 个。</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 6：上接在第 4 个，下接在第 1 个。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-3-1 型 -->
+        <div class="category">
+            <h2>2. “2-3-1” 型 (3种)</h2>
+            <p>中间一行 3 个正方形，一边接出 2 个，另一边接出 1 个。</p>
+            <div class="grid">
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 1：上面 1 个接在第 1 个</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 2：上面 1 个接在第 2 个</div>
+                </div>
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">上</div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                    </div>
+                    <div class="row">
+                        <div class="square">下</div>
+                        <div class="square">下</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">情况 3：上面 1 个接在第 3 个</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-2-2 型 -->
+        <div class="category">
+            <h2>3. “2-2-2” 型 (1种)</h2>
+            <p>阶梯状排列，每排2个。</p>
+            <div class="grid">
+                <div class="net">
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">1</div>
+                        <div class="square">2</div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="square">3</div>
+                        <div class="square">4</div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="square">5</div>
+                        <div class="square">6</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="explanation">像楼梯一样的错开结构，其中 3 接在 6 上，1 接在 4 上。</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3-3 型 -->
+        <div class="category">
+            <h2>4. “3-3” 型 (1种)</h2>
+            <p>两排各3个，呈“Z”字形连接。</p>
+            <div class="grid">
+                <div class="net">
+                    <div class="row">
+                        <div class="square">2</div>
+                        <div class="square">3</div>
+                        <div class="square">1</div>
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                    </div>
+                    <div class="row">
+                        <div class="empty"></div>
+                        <div class="empty"></div>
+                        <div class="square">6</div>
+                        <div class="square">5</div>
+                        <div class="square">4</div>
+                    </div>
+                    <div class="explanation">只有中间一个正方形相连，其中 1 接在 6 上。</div>
+                </div>
+            </div>
+        </div>
+
+        <footer style="margin-top: 40px; color: #999; font-size: 0.9em;">
+            <p>总计：11 种不同的展开方式</p>
+        </footer>
+    </div>
+</body>
+</html>

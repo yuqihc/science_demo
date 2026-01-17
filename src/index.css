@@ -1,0 +1,501 @@
+:root {
+    --bg-body: #F5F5F7;
+    --bg-card: #FFFFFF;
+    --text-primary: #1D1D1F;
+    --text-secondary: #86868B;
+    --accent-blue: #007AFF;
+    --accent-red: #FF3B30;
+    --accent-orange: #FF9500;
+    --accent-green: #34C759;
+    --border-color: #D2D2D7;
+    --btn-bg: #E8E8ED;
+    --btn-hover: #D2D2D7;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+h2 {
+    font-weight: 600;
+    font-size: 40px;
+    margin-bottom: 60px;
+    letter-spacing: -0.5px;
+    text-align: center;
+    color: #000;
+}
+
+/* 容器样式 */
+.main-container {
+    background: var(--bg-card);
+    border-radius: 32px;
+    padding: 50px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.02);
+    margin-bottom: 40px;
+}
+
+/* 控制面板 */
+.control-panel {
+    background: #F9F9FB;
+    border-radius: 24px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.accel-value {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: "SF Mono", monospace;
+    color: var(--text-primary);
+}
+
+.speed-display {
+    font-family: "SF Mono", monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.03);
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+/* 按钮样式 */
+.btn-main {
+    padding: 18px;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 100%;
+}
+
+.btn-primary {
+    background: var(--text-primary);
+    color: white;
+}
+
+.btn-secondary {
+    background: #FFFFFF;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-main:hover {
+    opacity: 0.9;
+}
+
+.btn-main:active {
+    transform: scale(0.98);
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* 信息展示网格 */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 40px;
+}
+
+.info-card {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 32px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.info-text {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text-primary);
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+
+.highlight-box {
+    margin-top: auto;
+    padding: 20px;
+    background: #F5F5F7;
+    border-radius: 18px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.highlight-box strong {
+    color: var(--text-primary);
+}
+
+/* 滑块控件 */
+.slider-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #FFFFFF;
+    color: var(--text-primary);
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 28px;
+    width: 28px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    margin-top: -12px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: #D2D2D7;
+    border-radius: 2px;
+}
+
+/* 导航栏 */
+.nav-bar {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* 仪表盘/主页样式 */
+.dashboard-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 100px;
+    margin-top: 20px;
+}
+
+.subject-card {
+    background: var(--bg-card);
+    border-radius: 32px;
+    padding: 40px;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.03);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    width: calc(50% - 30px); /* 手动计算宽度：(100% - 间距) / 2 */
+    margin-bottom: 60px;     /* 手动添加底部间距 */
+    min-height: 240px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    box-sizing: border-box; /* 确保 padding 不会撑大宽度 */
+}
+
+.subject-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+    border-color: var(--border-color);
+}
+
+.subject-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 20px;
+    background: #F5F5F7;
+}
+
+.subject-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.subject-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* 学科主题色 */
+.theme-physics .subject-icon { background: rgba(0,122,255,0.1); color: var(--accent-blue); }
+.theme-math .subject-icon { background: rgba(255,59,48,0.1); color: var(--accent-red); }
+.theme-chemistry .subject-icon { background: rgba(255,149,0,0.1); color: var(--accent-orange); }
+.theme-biology .subject-icon { background: rgba(52,199,89,0.1); color: var(--accent-green); }
+
+/* 跑道样式优化 */
+.track-section {
+    margin-bottom: 50px;
+}
+
+.track-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.track {
+    height: 100px; /* 稍微增高以容纳更详细的汽车 */
+    background: #3e3e42; /* 沥青路面颜色 */
+    border-radius: 12px;
+    position: relative;
+    margin-bottom: 30px;
+    overflow: hidden; 
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+    border-bottom: 4px solid #555;
+}
+
+/* 道路标线 */
+.track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3) 50%, transparent 50%);
+    background-size: 40px 100%; /* 虚线效果 */
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+/* 终点线 */
+.track::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 40px;
+    width: 10px;
+    background: repeating-linear-gradient(
+        45deg,
+        #ffffff,
+        #ffffff 10px,
+        #000000 10px,
+        #000000 20px
+    );
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.car-container {
+    width: 100px;
+    height: 50px;
+    position: absolute;
+    bottom: 15px; /* 调整垂直位置 */
+    left: 10px;
+    z-index: 10;
+    /* 移除之前的简单过渡，由 React 状态驱动位置 */
+    /* transition: transform 0.1s linear; */ 
+    will-change: left;
+}
+
+/* 汽车主体 SVG 样式 */
+.car-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4));
+}
+
+.car-body {
+    transition: fill 0.3s;
+}
+
+/* 车轮动画 */
+.wheel {
+    transform-origin: center;
+    transform-box: fill-box;
+}
+
+.car-running .wheel {
+    /* 暂时禁用旋转动画，以解决乱飞问题，可能与 transform-origin 有关 */
+    /* animation: spin 0.5s linear infinite; */
+}
+
+/* 车身震动效果 */
+.car-running .car-body-group {
+    /* 暂时禁用震动，保持稳定 */
+    /* animation: bounce 0.3s ease-in-out infinite alternate; */
+}
+
+/* 尾气/风速线效果 */
+.wind-line {
+    stroke: rgba(255,255,255,0.6);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.2s;
+}
+
+.car-running .wind-line {
+    opacity: 1;
+    animation: wind-flow 0.5s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(1px); }
+}
+
+@keyframes wind-flow {
+    0% { transform: translateX(-10px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(-30px); opacity: 0; }
+}
+
+.car-blue .car-body { fill: var(--accent-blue); }
+.car-red .car-body { fill: var(--accent-red); }
+
+/* 移动轨迹点 (Breadcrumbs) */
+.breadcrumb {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 20px; /* 与汽车底部对齐 */
+    transform: translateX(-50%);
+    z-index: 5;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+    body { padding: 20px 16px; }
+    .main-container { padding: 24px; }
+    .action-buttons { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+    h2 { font-size: 24px; }
+    /* 移动端改为单列 */
+    .dashboard-grid { 
+        display: block; 
+    }
+    .subject-card {
+        width: 100%;
+        margin-bottom: 40px;
+    }
+    .track { height: 80px; }
+    .car-container { width: 80px; height: 40px; bottom: 10px; }
+}

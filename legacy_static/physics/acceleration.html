@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>理解加速度 - 动画演示</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* 跑道样式 */
+        .track-section {
+            margin-bottom: 50px;
+        }
+
+        .track-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .track {
+            height: 90px;
+            background: #F5F5F7;
+            border-radius: 20px;
+            position: relative;
+            margin-bottom: 30px;
+            overflow: hidden; 
+        }
+
+        .track::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+        }
+
+        .car {
+            width: 60px;
+            height: 36px;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 22px; /* 居中 */
+            left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.1s linear; /* 简单的平滑处理，实际动画由 JS 控制 */
+            z-index: 10;
+        }
+
+        .car-blue { background: var(--accent-blue); }
+        .car-red { background: var(--accent-red); }
+
+        /* 移动端适配补丁 */
+        @media (max-width: 600px) {
+            .track { height: 60px; }
+            .car { width: 50px; height: 30px; bottom: 15px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <a href="../index.html" class="nav-btn">
+            <span style="font-size: 18px;">🏠</span>
+        </a>
+        <a href="index.html" class="nav-btn">
+            <span style="font-size: 18px;">←</span> 物理目录
+        </a>
+    </div>
+
+    <h2>速度 vs 加速度</h2>
+
+    <div class="main-container">
+        <!-- 匀速小车 -->
+        <div class="track-section">
+            <div class="track-label">
+                <span>🔵 匀速运动 (a = 0)</span>
+                <span class="speed-display" id="speed-constant">0.00 px/s</span>
+            </div>
+            <div class="track">
+                <div id="car-constant" class="car car-blue">匀速</div>
+            </div>
+        </div>
+
+        <!-- 加速小车 -->
+        <div class="track-section">
+            <div class="track-label">
+                <span>🔴 加速运动 (a > 0)</span>
+                <span class="speed-display" id="speed-accel">0.00 px/s</span>
+            </div>
+            <div class="track">
+                <div id="car-accel" class="car car-red">加速</div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <div class="panel-header">
+                <span class="panel-title">加速度设置</span>
+                <span class="accel-value" id="display-value">0.05</span>
+            </div>
+            
+            <div class="slider-wrapper">
+                <button class="btn-icon" onclick="changeAccel(-0.01)">-</button>
+                <input type="range" id="accel-slider" min="0.01" max="0.20" step="0.01" value="0.05" oninput="updateAccelFromSlider(this.value)">
+                <button class="btn-icon" onclick="changeAccel(0.01)">+</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-main btn-primary" onclick="startRace()">开始演示</button>
+                <button class="btn-main btn-secondary" onclick="resetRace()">重置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 观察与思考 -->
+    <div class="info-grid">
+        <div class="info-card">
+            <div class="info-title">
+                <div class="dot" style="background: var(--accent-blue)"></div>
+                观察匀速运动
+            </div>
+            <div class="info-text">
+                “你看，蓝色的小车每秒钟走的距离都是一样的，就像你在人行道上匀速散步。”
+            </div>
+            <div class="highlight-box">
+                <strong>核心：</strong> 它的速度没变，所以它的加速度是 0。
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-title">
+                <div class="dot" style="background: var(--accent-red)"></div>
+                观察加速运动
+            </div>
+            <div class="info-text">
+                “红色小车刚开始很慢，但它每一秒都比前一秒跑得更快！”
+            </div>
+            <div class="highlight-box">
+                <strong>核心：</strong> 这种“速度增加”的过程，就叫加速度。
+            </div>
+        </div>
+
+        <!-- 生活中的类比 -->
+        <div class="info-card full-width">
+            <div class="info-title">
+                <div class="dot" style="background: #FF9500"></div>
+                🌟 生活中的类比
+            </div>
+            <ul class="analogy-list">
+                <li><strong>加速度为正：</strong> 爸爸踩油门，车子猛地冲出去，后背感受到推力。</li>
+                <li><strong>加速度为负（减速）：</strong> 爸爸踩刹车，车子慢慢停下来。</li>
+                <li><strong>零加速度：</strong> 开启自动巡航，车速表上的数字一直不动。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 加速度公式 -->
+    <div class="main-container">
+        <div class="info-title">📐 加速度公式</div>
+        <div style="text-align: center; padding: 20px 0;">
+            <div style="font-size: 24px; font-family: 'Times New Roman', serif; font-weight: bold; margin-bottom: 20px;">
+                a = <span style="display: inline-block; text-align: center; vertical-align: middle;">
+                    <div style="border-bottom: 2px solid currentColor; padding-bottom: 2px;">Δv</div>
+                    <div>Δt</div>
+                </span> = 
+                <span style="display: inline-block; text-align: center; vertical-align: middle;">
+                    <div style="border-bottom: 2px solid currentColor; padding-bottom: 2px;">v<sub>final</sub> - v<sub>initial</sub></div>
+                    <div>t</div>
+                </span>
+            </div>
+            <div class="highlight-box" style="text-align: left;">
+                <p style="margin: 0 0 10px 0;"><strong>通俗解释：</strong> 加速度就是告诉你，在单位时间里，速度到底增加了（或减少了）多少。</p>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                    <div>• <strong>a (Acceleration)：</strong> 加速度，表示速度变化的快慢。</div>
+                    <div>• <strong>Δv (Change in Velocity)：</strong> 速度的变化量。</div>
+                    <div>• <strong>Δt (Time taken)：</strong> 经过的时间。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let animationId;
+        let posX_const = 10;
+        let posX_accel = 10;
+        let vel_const = 2;   // 匀速小车的速度
+        let vel_accel = 0;   // 加速小车的初始速度
+        let accel = 0.05;    // 默认加速度
+
+        function changeAccel(delta) {
+            let newVal = accel + delta;
+            updateAccelFromSlider(newVal);
+        }
+
+        function updateAccelFromSlider(val) {
+            let numVal = parseFloat(val);
+            // 限制范围
+            if (numVal < 0.01) numVal = 0.01;
+            if (numVal > 0.20) numVal = 0.20;
+            
+            accel = parseFloat(numVal.toFixed(2));
+            
+            // 同步 UI
+            document.getElementById('accel-slider').value = accel;
+            document.getElementById('display-value').innerText = accel.toFixed(2);
+        }
+
+        function startRace() {
+            if (animationId) return; // 防止重复点击
+            update();
+        }
+
+        function update() {
+            const trackWidth = document.querySelector('.track').clientWidth - 60; // 减去小车宽度
+
+            // 匀速逻辑
+            if (posX_const < trackWidth) {
+                posX_const += vel_const;
+                document.getElementById('car-constant').style.left = posX_const + 'px';
+                document.getElementById('speed-constant').innerText = `${vel_const.toFixed(2)} px/s`;
+            }
+
+            // 加速逻辑
+            if (posX_accel < trackWidth) {
+                vel_accel += accel; 
+                posX_accel += vel_accel;
+                document.getElementById('car-accel').style.left = posX_accel + 'px';
+                document.getElementById('speed-accel').innerText = `${vel_accel.toFixed(2)} px/s`;
+            }
+
+            if (posX_const < trackWidth || posX_accel < trackWidth) {
+                animationId = requestAnimationFrame(update);
+            }
+        }
+
+        function resetRace() {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+            
+            posX_const = 10;
+            posX_accel = 10;
+            vel_accel = 0;
+            
+            // 重置位置
+            document.getElementById('car-constant').style.left = '10px';
+            document.getElementById('car-accel').style.left = '10px';
+            
+            // 重置速度显示
+            document.getElementById('speed-constant').innerText = '0.00 px/s';
+            document.getElementById('speed-accel').innerText = '0.00 px/s';
+            
+            // 注意：不重置加速度设定值，保留用户调整后的值，体验更好
+        }
+    </script>
+</body>
+</html>
