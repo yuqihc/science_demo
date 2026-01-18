@@ -5,6 +5,21 @@ import { Link } from 'react-router-dom';
 import * as THREE from 'three';
 import gsap from 'gsap';
 
+class SilentErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch() {}
+  render() {
+    if (this.state.hasError) return this.props.fallback ?? null;
+    return this.props.children;
+  }
+}
+
 // --- Constants & Data ---
 
 const FACE_CONFIGS = {
@@ -777,6 +792,7 @@ const SolidShapes = () => {
   const [selectedColor, setSelectedColor] = useState('#FF9800'); // Default color
   const [isControlsExpanded, setIsControlsExpanded] = useState(true); // Default expanded
   const [history, setHistory] = useState([[]]); // History for undo
+  const [hdrAvailable, setHdrAvailable] = useState(false);
 
   // Reset state when shape changes
   useEffect(() => {
@@ -794,6 +810,22 @@ const SolidShapes = () => {
         }
     }
   }, [currentShape]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('./hdri/potsdamer_platz_1k.hdr', { method: 'HEAD' })
+      .then((r) => {
+        if (cancelled) return;
+        setHdrAvailable(r.ok);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setHdrAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const updateBlocks = (newBlocks) => {
       // If passing a function, resolve it first
@@ -908,7 +940,13 @@ const SolidShapes = () => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} castShadow />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
-        <Environment preset="city" />
+        {hdrAvailable && (
+          <SilentErrorBoundary fallback={null}>
+            <React.Suspense fallback={null}>
+              <Environment files="./hdri/potsdamer_platz_1k.hdr" />
+            </React.Suspense>
+          </SilentErrorBoundary>
+        )}
 
         {/* Builder Mode doesn't use Float or Center in the same way */}
         {currentShape === 'builder' ? (
