@@ -173,9 +173,9 @@ const StickBundling = () => {
                             position: 'relative', boxShadow: '5px 5px 15px rgba(0,0,0,0.2)',
                             transform: 'rotate(-2deg)'
                         }}>
-                            <span style={{fontSize: '14px', color: '#3E2723', fontWeight: 'bold', background: 'rgba(255,255,255,0.7)', padding: '2px 8px', borderRadius: '10px', marginTop: '-20px', marginBottom: '20px'}}>10根</span>
-                            <div style={{position: 'absolute', width: '110%', height: '12px', background: '#5D4037', top: '35%', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.3)'}}></div>
-                            <div style={{position: 'absolute', width: '110%', height: '12px', background: '#5D4037', bottom: '35%', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.3)'}}></div>
+                            <span style={{fontSize: '14px', color: '#3E2723', fontWeight: 'bold', background: 'rgba(255,255,255,0.7)', padding: '2px 8px', borderRadius: '10px', marginTop: '-20px', marginBottom: '20px', position: 'relative', zIndex: 1}}>10根</span>
+                            <div style={{position: 'absolute', width: '110%', height: '12px', background: '#5D4037', top: '35%', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.3)', left: '50%', transform: 'translateX(-50%)', zIndex: 0, pointerEvents: 'none'}}></div>
+                            <div style={{position: 'absolute', width: '110%', height: '12px', background: '#5D4037', bottom: '35%', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.3)', left: '50%', transform: 'translateX(-50%)', zIndex: 0, pointerEvents: 'none'}}></div>
                         </div>
                     ))}
                 </div>
