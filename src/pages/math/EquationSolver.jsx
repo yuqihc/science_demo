@@ -251,8 +251,8 @@ const EquationSolver = () => {
     sourceBalls.forEach((ball, i) => {
         if (!ball) return;
         
-        // Target is from the end, going backwards
-        const targetIndex = totalCount - 1 - i;
+        // Target is aligned by index (1->1, 2->2)
+        const targetIndex = i;
         const targetBall = targetBalls[targetIndex];
         
         if (!targetBall) return;
@@ -293,7 +293,7 @@ const EquationSolver = () => {
                 "50%": { left: (startLeft + targetLeftAdjusted) / 2, top: apexY, ease: "power1.out" },
                 "100%": { left: targetLeftAdjusted, top: targetTop, ease: "power1.in" }
             },
-            backgroundColor: '#FF7F50', // Coral
+            backgroundColor: '#EF4444', // Red
             duration: 1.2,
             rotate: 360,
         }, "move");
@@ -337,7 +337,7 @@ const EquationSolver = () => {
     const containerRect = containerRef.current.getBoundingClientRect();
 
     sourceBalls.forEach((ball, i) => {
-        const targetIndex = totalCount - 1 - i;
+        const targetIndex = i;
         const targetBall = targetBalls[targetIndex];
         
         if (!targetBall) return;
@@ -373,6 +373,61 @@ const EquationSolver = () => {
             ease: "power1.out"
         }, ">");
     });
+
+    // 3. Reorder Remaining Balls
+    tl.add(() => {
+        // Find remaining balls (indices >= leftCount)
+        const remainingBalls = [];
+        for (let i = leftCount; i < rightBallsRef.current.length; i++) {
+            if (rightBallsRef.current[i]) remainingBalls.push(rightBallsRef.current[i]);
+        }
+        
+        if (remainingBalls.length === 0) return;
+
+        // FLIP Animation
+        const startPositions = remainingBalls.map(b => {
+            const rect = b.getBoundingClientRect();
+            return { x: rect.left, y: rect.top };
+        });
+
+        // Change Layout: Hide cancelled balls (0 to leftCount-1) to trigger reflow
+        // Also hide source balls just in case
+        sourceBalls.forEach(b => b.style.display = 'none');
+        
+        // Only hide the balls that were actually targeted for cancellation
+        // targetBalls contains ALL balls (slice(0, totalCount)), so we must be specific
+        // We targeted indices 0 to leftCount-1 in the loop above
+        for (let i = 0; i < leftCount; i++) {
+            if (targetBalls[i]) targetBalls[i].style.display = 'none';
+        }
+
+        // Apply FLIP
+        remainingBalls.forEach((ball, i) => {
+            const start = startPositions[i];
+            const rect = ball.getBoundingClientRect(); // New position after reflow
+            
+            const deltaX = start.x - rect.left;
+            const deltaY = start.y - rect.top;
+            
+            // Set initial transform to match previous position
+            gsap.set(ball, { x: deltaX, y: deltaY });
+            
+            // Update Number Text to new index (1, 2, 3...)
+            // Wait, we want them to slide to position 1, 2, 3...
+            // So updating text now is fine.
+            ball.innerText = i + 1;
+        });
+
+        // Animate to new layout position
+        gsap.to(remainingBalls, {
+            x: 0,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.inOut",
+            stagger: 0.05
+        });
+
+    }, ">"); // Run immediately after disappearance
   };
 
   const handleNextStep = () => {
