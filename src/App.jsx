@@ -9,6 +9,7 @@ import NumberSense20 from './pages/NumberSense20';
 import MathAddSubtract from './pages/MathAddSubtract';
 import MathCarryAdd from './pages/MathCarryAdd';
 import SolidShapes from './pages/SolidShapes';
+import EquationSolver from './pages/math/EquationSolver';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/math/add-subtract" element={<MathAddSubtract />} />
         <Route path="/math/carry-add" element={<MathCarryAdd />} />
         <Route path="/math/solid-shapes" element={<SolidShapes />} />
+        <Route path="/math/equation-solver" element={<EquationSolver />} />
         
         {/* Placeholder for other routes */}
         <Route path="/chemistry" element={<div className="main-container" style={{textAlign: 'center'}}><h2>化学模块开发中...</h2><Link to="/" className="nav-btn">返回首页</Link></div>} />

@@ -151,6 +151,15 @@ function MathHome() {
       title: "认识立体图形",
       desc: "探索正方体、长方体、圆柱和球体，培养空间想象力。",
       cta: "探索空间"
+    },
+    {
+      to: "/math/equation-solver",
+      icon: "⚖️",
+      color: "#8B5CF6",
+      bg: "linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%)",
+      title: "解方程演示",
+      desc: "通过动画理解移项和抵消，轻松掌握解方程的奥秘！",
+      cta: "开始探索"
     }
   ];
 
