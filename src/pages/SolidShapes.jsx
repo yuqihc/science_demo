@@ -303,27 +303,32 @@ const ShapeInfo = ({ title, description, features, minimized = false }) => {
   return (
     <div style={{
         position: 'absolute',
-        top: '20px',
-        left: '20px',
-        maxWidth: '320px',
+        top: '10%', // Position in the top area (approx 10-15% down)
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '90%', // Mobile width
+        maxWidth: '400px',
         pointerEvents: 'none',
-        zIndex: 10
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
     }}>
         {/* Toggle Button (Clickable) */}
         <div style={{ pointerEvents: 'auto', marginBottom: '10px' }}>
             <button 
                 onClick={() => setIsMinimized(!isMinimized)}
                 style={{
-                    background: 'rgba(255, 255, 255, 0.9)',
+                    background: 'rgba(255, 255, 255, 0.6)', // More transparent
                     backdropFilter: 'blur(10px)',
                     color: '#1a237e',
-                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
                     padding: '8px 16px',
                     borderRadius: '20px',
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: '600',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                     transition: 'all 0.2s ease',
                     display: 'flex',
                     alignItems: 'center',
@@ -337,19 +342,20 @@ const ShapeInfo = ({ title, description, features, minimized = false }) => {
         {/* Content (Only visible if not minimized) */}
         {!isMinimized && (
             <div style={{
-                background: 'rgba(255, 255, 255, 0.85)',
+                background: 'rgba(255, 255, 255, 0.65)', // Semi-transparent as requested
                 backdropFilter: 'blur(20px)',
-                padding: '24px',
+                padding: '20px',
                 borderRadius: '24px',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.5)',
-                pointerEvents: 'auto'
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                pointerEvents: 'auto',
+                width: '100%'
             }}>
-                <h2 style={{ margin: '0 0 12px 0', color: '#1a237e', fontSize: '1.4em', fontWeight: '700' }}>{title}</h2>
-                <p style={{ margin: '0 0 16px 0', color: '#3949ab', lineHeight: '1.6', fontSize: '0.95em' }}>{description}</p>
+                <h2 style={{ margin: '0 0 8px 0', color: '#1a237e', fontSize: '1.2em', fontWeight: '700' }}>{title}</h2>
+                <p style={{ margin: '0 0 12px 0', color: '#3949ab', lineHeight: '1.5', fontSize: '0.9em' }}>{description}</p>
                 <div>
-                <h4 style={{ margin: '0 0 8px 0', color: '#283593', fontSize: '1em', fontWeight: '600' }}>特征：</h4>
-                <ul style={{ margin: '0', paddingLeft: '20px', color: '#5c6bc0', fontSize: '0.95em', lineHeight: '1.5' }}>
+                <h4 style={{ margin: '0 0 6px 0', color: '#283593', fontSize: '0.95em', fontWeight: '600' }}>特征：</h4>
+                <ul style={{ margin: '0', paddingLeft: '20px', color: '#5c6bc0', fontSize: '0.9em', lineHeight: '1.4' }}>
                     {features.map((f, i) => <li key={i}>{f}</li>)}
                 </ul>
                 </div>
@@ -371,61 +377,70 @@ const Navigation = ({ currentShape, onSelect }) => {
 
   return (
     <div style={{
-      position: 'absolute',
-      bottom: '30px',
-      left: '50%',
-      transform: 'translateX(-50%)',
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      width: '100%',
       display: 'flex',
       gap: '12px',
-      background: 'rgba(255, 255, 255, 0.85)',
+      background: 'rgba(255, 255, 255, 0.9)', // Higher opacity for nav
       backdropFilter: 'blur(20px)',
-      padding: '12px',
-      borderRadius: '24px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
-      border: '1px solid rgba(255, 255, 255, 0.5)',
-      zIndex: 10
+      padding: '12px 12px calc(12px + env(safe-area-inset-bottom)) 12px', // Safe area
+      borderRadius: '24px 24px 0 0',
+      boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.05)',
+      borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+      zIndex: 2000,
+      overflowX: 'auto', // Horizontal scroll
+      scrollBehavior: 'smooth',
+      WebkitOverflowScrolling: 'touch' // iOS smooth scroll
     }}>
       {shapes.map(shape => (
         <button
           key={shape.id}
           onClick={() => onSelect(shape.id)}
+          className={`active:scale-90 transition-transform duration-200 ${currentShape === shape.id ? 'scale-105' : 'scale-100'}`}
           style={{
-            background: currentShape === shape.id ? 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)' : 'transparent',
+            background: currentShape === shape.id ? 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)' : 'rgba(255,255,255,0.5)',
             color: currentShape === shape.id ? 'white' : '#5c6bc0',
             border: 'none',
             padding: '10px 20px',
             borderRadius: '16px',
             cursor: 'pointer',
-            fontSize: '15px',
+            fontSize: '14px',
             fontWeight: '600',
             display: 'flex',
+            flexDirection: 'column', // Stack icon and text for better mobile fit
             alignItems: 'center',
-            gap: '8px',
-            transition: 'all 0.3s ease',
-            boxShadow: currentShape === shape.id ? '0 4px 12px rgba(33, 150, 243, 0.3)' : 'none'
+            gap: '4px',
+            minWidth: '80px', // Ensure touch target
+            flexShrink: 0,
+            // transform is handled by className now
           }}
         >
-          <span style={{fontSize: '18px'}}>{shape.icon}</span>
-          <span>{shape.label}</span>
+          <span style={{fontSize: '24px'}}>{shape.icon}</span>
+          <span style={{whiteSpace: 'nowrap'}}>{shape.label}</span>
         </button>
       ))}
-      <Link to="/math" style={{
-        textDecoration: 'none',
-        marginLeft: '12px',
-        background: 'linear-gradient(135deg, #FF5252 0%, #D32F2F 100%)',
-        color: 'white',
-        padding: '10px 24px',
-        borderRadius: '16px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: '600',
-        fontSize: '15px',
-        boxShadow: '0 4px 12px rgba(244, 67, 54, 0.3)',
-        transition: 'all 0.2s ease'
-      }}>
-        🚪 退出
-      </Link>
+      <Link to="/math" className="active:scale-90 transition-transform duration-200" style={{
+         textDecoration: 'none',
+         background: 'linear-gradient(135deg, #FF5252 0%, #D32F2F 100%)',
+         color: 'white',
+         padding: '10px 20px',
+         borderRadius: '16px',
+         display: 'flex',
+         flexDirection: 'column',
+         alignItems: 'center',
+         justifyContent: 'center',
+         fontWeight: '600',
+         fontSize: '14px',
+         minWidth: '80px',
+         flexShrink: 0,
+         gap: '4px',
+         boxShadow: '0 4px 12px rgba(244, 67, 54, 0.3)',
+       }}>
+         <span style={{fontSize: '24px'}}>🚪</span>
+         <span style={{whiteSpace: 'nowrap'}}>退出</span>
+       </Link>
     </div>
   );
 };
@@ -780,6 +795,7 @@ const BuilderModule = ({ blocks, setBlocks, deleteMode, previewMode, selectedCol
 
 const SolidShapes = () => {
   const [currentShape, setCurrentShape] = useState('cube');
+  const [isNetSelectorOpen, setIsNetSelectorOpen] = useState(true); // Default open
   const [isFolded, setIsFolded] = useState(true); // Default folded (solid)
   const [sphereSize, setSphereSize] = useState(1);
   const [selectedNet, setSelectedNet] = useState(NETS[0].id);
@@ -924,15 +940,17 @@ const SolidShapes = () => {
       top: 0,
       left: 0,
       width: '100vw',
-      height: '100vh',
+      height: '100dvh', // Dynamic viewport height
+      paddingBottom: 'env(safe-area-inset-bottom)', // Safe area
       zIndex: 1000,
       // background: '#f0f4f8',
       background: 'radial-gradient(circle at 50% 0%, #f0f4ff 0%, #e6eeff 100%)', // Updated to match theme
-      overflow: 'hidden'
+      overflow: 'hidden',
+      boxSizing: 'border-box'
     }}>
       
       {/* 3D Canvas */}
-      <Canvas camera={{ position: [5, 5, 5], fov: 45 }} shadows>
+      <Canvas camera={{ position: [5, 5, 5], fov: 45 }} shadows style={{ pointerEvents: 'auto' }}>
         {/* Transparent background to let gradient show through, or use the gradient color */}
         {/* <color attach="background" args={['#f0f4f8']} /> */} 
         
@@ -952,7 +970,7 @@ const SolidShapes = () => {
         {currentShape === 'builder' ? (
             <BuilderModule blocks={blocks} setBlocks={updateBlocks} deleteMode={deleteMode} previewMode={previewMode} selectedColor={selectedColor} />
         ) : (
-             <group>
+             <group position={[0, 1.0, 0]}> {/* Offset to upper middle area (approx 50-60% height visually) */}
                 <Center>
                     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
                         {currentShape === 'cube' && <FoldingBox type="cube" isFolded={isFolded} netId={selectedNet} />}
@@ -978,45 +996,82 @@ const SolidShapes = () => {
       {(currentShape === 'cube' || currentShape === 'cuboid') && (
         <div style={{
             position: 'absolute',
-            bottom: '100px',
-            right: '20px',
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(20px)',
-            padding: '15px',
-            borderRadius: '16px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.5)',
-            maxHeight: '40vh',
-            overflowY: 'auto',
+            bottom: 'calc(100px + env(safe-area-inset-bottom))',
+            right: 0,
             zIndex: 1500,
-            width: '220px'
+            display: 'flex',
+            alignItems: 'flex-start',
+            transform: isNetSelectorOpen ? 'translateX(0)' : 'translateX(220px)', // Slide panel out, leaving button
+            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}>
-           <h3 style={{margin: '0 0 10px 0', fontSize: '15px', color: '#1a237e', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px', fontWeight: '600'}}>选择展开图</h3>
-           <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-               {availableNets.map(net => (
-                   <button
-                       key={net.id}
-                       onClick={() => setSelectedNet(net.id)}
-                       style={{
-                           padding: '10px 12px',
-                           borderRadius: '10px',
-                           border: selectedNet === net.id ? '2px solid #2196F3' : '1px solid transparent',
-                           background: selectedNet === net.id ? 'rgba(33, 150, 243, 0.1)' : 'rgba(255,255,255,0.5)',
-                           cursor: 'pointer',
-                           textAlign: 'left',
-                           fontSize: '13px',
-                           display: 'flex',
-                           alignItems: 'center',
-                           justifyContent: 'space-between',
-                           transition: 'all 0.2s',
-                           color: selectedNet === net.id ? '#1565C0' : '#555'
-                       }}
-                   >
-                       <span style={{flex: 1}}>{net.label}</span>
-                       {selectedNet === net.id && <span style={{color: '#2196F3', fontWeight: 'bold'}}>✓</span>}
-                   </button>
-               ))}
-           </div>
+           {/* Toggle Button */}
+           <button
+                onClick={() => setIsNetSelectorOpen(!isNetSelectorOpen)}
+                style={{
+                    width: '32px',
+                    height: '48px',
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    borderRadius: '8px 0 0 8px',
+                    boxShadow: '-4px 0 12px rgba(0,0,0,0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    borderRight: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#2196F3',
+                    fontSize: '18px',
+                    marginTop: '20px',
+                    outline: 'none'
+                }}
+            >
+                {isNetSelectorOpen ? '›' : '‹'}
+            </button>
+
+            {/* Panel Content */}
+            <div style={{
+                background: 'rgba(255, 255, 255, 0.85)',
+                backdropFilter: 'blur(20px)',
+                padding: '15px',
+                borderRadius: '0 0 0 16px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                borderRight: 'none',
+                maxHeight: '30vh',
+                overflowY: 'auto',
+                width: '220px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+            }}>
+               <h3 style={{margin: '0 0 10px 0', fontSize: '15px', color: '#1a237e', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '8px', fontWeight: '600'}}>选择展开图</h3>
+               <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                   {availableNets.map(net => (
+                       <button
+                           key={net.id}
+                           onClick={() => setSelectedNet(net.id)}
+                           style={{
+                               padding: '10px 12px',
+                               borderRadius: '10px',
+                               border: selectedNet === net.id ? '2px solid #2196F3' : '1px solid transparent',
+                               background: selectedNet === net.id ? 'rgba(33, 150, 243, 0.1)' : 'rgba(255,255,255,0.5)',
+                               cursor: 'pointer',
+                               textAlign: 'left',
+                               fontSize: '13px',
+                               display: 'flex',
+                               alignItems: 'center',
+                               justifyContent: 'space-between',
+                               transition: 'all 0.2s',
+                               color: selectedNet === net.id ? '#1565C0' : '#555'
+                           }}
+                       >
+                           <span style={{flex: 1}}>{net.label}</span>
+                           {selectedNet === net.id && <span style={{color: '#2196F3', fontWeight: 'bold'}}>✓</span>}
+                       </button>
+                   ))}
+               </div>
+            </div>
         </div>
       )}
 
