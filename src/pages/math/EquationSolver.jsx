@@ -20,6 +20,74 @@ const EquationSolver = () => {
   const formulaStep3Ref = useRef(null);
   const instructionRef = useRef(null);
 
+  // Sound Effects Helper using Web Audio API
+  const playSound = (type) => {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        const now = ctx.currentTime;
+        
+        if (type === 'pop') {
+            // High frequency pop for focus
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        } else if (type === 'whoosh') {
+            // Slide for movement
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.linearRampToValueAtTime(400, now + 0.3);
+            gain.gain.setValueAtTime(0.05, now);
+            gain.gain.linearRampToValueAtTime(0, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } else if (type === 'zap') {
+            // Drop for collision/cancellation
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        } else if (type === 'success') {
+            // Major chord arpeggio
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+            notes.forEach((freq, i) => {
+                const oscN = ctx.createOscillator();
+                const gainN = ctx.createGain();
+                oscN.connect(gainN);
+                gainN.connect(ctx.destination);
+                
+                oscN.type = 'sine';
+                oscN.frequency.value = freq;
+                
+                const start = now + (i * 0.1);
+                gainN.gain.setValueAtTime(0, start);
+                gainN.gain.linearRampToValueAtTime(0.1, start + 0.05);
+                gainN.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+                
+                oscN.start(start);
+                oscN.stop(start + 0.5);
+            });
+        }
+    } catch (e) {
+        console.error("Audio playback failed", e);
+    }
+  };
+
   // Helper to reset scene completely
   const resetScene = () => {
       gsap.globalTimeline.clear();
@@ -122,6 +190,7 @@ const EquationSolver = () => {
   const runFocusAnimation = () => {
     if (leftCount === '' || totalCount === '') return;
 
+    playSound('pop');
     setIsAnimating(true);
     
     let ballsToFocus = [];
@@ -169,6 +238,7 @@ const EquationSolver = () => {
     }
     
     const tl = gsap.timeline({
+        onStart: () => playSound('whoosh'),
         onComplete: () => {
             setIsAnimating(false);
             setStep(2);
@@ -256,7 +326,9 @@ const EquationSolver = () => {
     }
 
     const tl = gsap.timeline({
+        onStart: () => playSound('zap'),
         onComplete: () => {
+            playSound('success');
             setIsAnimating(false);
             setStep(3);
         }
@@ -446,9 +518,11 @@ const EquationSolver = () => {
                             <div 
                                 key={i}
                                 ref={el => leftBallsRef.current[i] = el}
-                                className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm"
                                 style={{ backgroundColor: '#0EA5E9' }}
-                            />
+                            >
+                                {i + 1}
+                            </div>
                         ))}
                     </div>
                 ) : (
@@ -459,9 +533,11 @@ const EquationSolver = () => {
                                 <div 
                                     key={i}
                                     ref={el => leftBallsRef.current[i] = el}
-                                    className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                    className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm"
                                     style={{ backgroundColor: '#0EA5E9' }}
-                                />
+                                >
+                                    {i + 1}
+                                </div>
                             ))}
                         </div>
                         <div className={`bg-violet-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg
@@ -486,9 +562,11 @@ const EquationSolver = () => {
                                 <div 
                                     key={i}
                                     ref={el => rightBallsRef.current[i] = el}
-                                    className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                    className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm"
                                     style={{ backgroundColor: '#0EA5E9' }}
-                                />
+                                >
+                                    {i + 1}
+                                </div>
                             ))}
                         </div>
                         <div className="bg-violet-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg w-16 h-16 sm:w-20 sm:h-20 shrink-0">
@@ -501,9 +579,11 @@ const EquationSolver = () => {
                             <div 
                                 key={i}
                                 ref={el => rightBallsRef.current[i] = el}
-                                className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm"
                                 style={{ backgroundColor: '#0EA5E9' }}
-                            />
+                            >
+                                {i + 1}
+                            </div>
                         ))}
                     </div>
                  )}
