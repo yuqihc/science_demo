@@ -6,9 +6,8 @@ import { Link } from 'react-router-dom';
 
 const EquationSolver = () => {
   const [step, setStep] = useState(0); // 0: Start, 1: Focus, 2: Moved, 3: Cancelled/Done
-  const [leftCount, setLeftCount] = useState(6);
-  const [totalCount, setTotalCount] = useState(12);
-  const [showConfig, setShowConfig] = useState(false);
+  const [leftCount, setLeftCount] = useState(7);
+  const [totalCount, setTotalCount] = useState(14);
   const [isAnimating, setIsAnimating] = useState(false);
   const [resetKey, setResetKey] = useState(0); // Force re-mount of stage elements
   const [equationType, setEquationType] = useState('unknown_plus_a'); // 'unknown_plus_a' | 'a_plus_unknown' | 'total_minus_unknown'
@@ -62,20 +61,20 @@ const EquationSolver = () => {
     const safeLeft = leftCount === '' ? 0 : leftCount;
     const safeTotal = totalCount === '' ? 0 : totalCount;
 
+    // Colors: Sky Blue (#0EA5E9), Coral (#FF7F50)
+    // Old: Green (#10B981), Red (#EF4444)
+    const colorAdd = '#0EA5E9'; // Sky-500
+    const colorSub = '#FF7F50'; // Coral
+
     // Step 1: Initial Equation
     if (formulaStep1Ref.current) {
         let formula = '';
         if (equationType === 'unknown_plus_a') {
-            formula = `? \\; {\\color{#10B981}+ \\; ${safeLeft}} = ${safeTotal}`;
+            formula = `? \\; {\\color{${colorAdd}}+ \\; ${safeLeft}} = ${safeTotal}`;
         } else if (equationType === 'a_plus_unknown') {
-            formula = `{\\color{#10B981}${safeLeft} \\; +} \\; ? = ${safeTotal}`;
+            formula = `{\\color{${colorAdd}}${safeLeft} \\; +} \\; ? = ${safeTotal}`;
         } else if (equationType === 'total_minus_unknown') {
-            // 12 - ? = 6
-            // We use safeTotal for the "Whole" (12) and safeLeft for the "Part" (6)
-            // Wait, users inputs: leftCount is usually the "Part". totalCount is "Whole".
-            // In 12 - ? = 6, 12 is Whole, 6 is Part.
-            // So logic holds: totalCount - ? = leftCount
-            formula = `${safeTotal} \\; - \\; ? = {\\color{#10B981}${safeLeft}}`;
+            formula = `${safeTotal} \\; - \\; ? = {\\color{${colorAdd}}${safeLeft}}`;
         }
             
         katex.render(formula, formulaStep1Ref.current, {
@@ -89,10 +88,10 @@ const EquationSolver = () => {
         let formula = '';
         if (equationType === 'total_minus_unknown') {
             // 12 - 6 = ?
-            formula = `${safeTotal} \\; {\\color{#EF4444}- \\; ${safeLeft}} = ?`;
+            formula = `${safeTotal} \\; {\\color{${colorSub}}- \\; ${safeLeft}} = ?`;
         } else {
             // ? = 12 - 6
-            formula = `? = ${safeTotal} \\; {\\color{#EF4444}- \\; ${safeLeft}}`;
+            formula = `? = ${safeTotal} \\; {\\color{${colorSub}}- \\; ${safeLeft}}`;
         }
         
         katex.render(formula, formulaStep2Ref.current, {
@@ -121,14 +120,10 @@ const EquationSolver = () => {
 
   // Animation Steps
   const runFocusAnimation = () => {
-    // Ensure inputs are valid numbers before starting
     if (leftCount === '' || totalCount === '') return;
 
     setIsAnimating(true);
     
-    // Determine which balls to focus on
-    // In addition modes: Focus on Left Balls (Part)
-    // In subtraction mode: Focus on Right Balls (Part)
     let ballsToFocus = [];
     if (equationType === 'total_minus_unknown') {
         ballsToFocus = rightBallsRef.current.slice(0, leftCount);
@@ -173,16 +168,15 @@ const EquationSolver = () => {
         targetBalls = rightBallsRef.current.slice(0, totalCount);
     }
     
-    // Mapping: Source 0 -> Target Last (totalCount - 1)
-    //          Source 1 -> Target Second Last (totalCount - 2)
-    // This ensures we fill from the end backwards
-    
     const tl = gsap.timeline({
         onComplete: () => {
             setIsAnimating(false);
             setStep(2);
         }
     });
+
+    // Get Container Rect for Relative Calculation
+    const containerRect = containerRef.current.getBoundingClientRect();
 
     sourceBalls.forEach((ball, i) => {
         if (!ball) return;
@@ -196,31 +190,41 @@ const EquationSolver = () => {
         const ballRect = ball.getBoundingClientRect();
         const targetRect = targetBall.getBoundingClientRect();
         
-        // 1. Switch to Fixed Position to escape layout constraints
-        // We set initial position to where it currently is visually
+        // Relative Coordinates
+        const startLeft = ballRect.left - containerRect.left;
+        const startTop = ballRect.top - containerRect.top;
+        const targetLeft = targetRect.left - containerRect.left;
+        
+        // Offset Overlay Strategy:
+        // Instead of floating 40px above (which causes overlap on multiline),
+        // we overlay on the top-right corner of the target ball.
+        // Target ball size is roughly 32px-40px.
+        // We offset by x: +10, y: -10 to show it's "attached" but distinct.
+        const targetTop = (targetRect.top - containerRect.top) - 15; 
+        const targetLeftAdjusted = targetLeft + 15;
+
+        // 1. Switch to Absolute Position (Relative to Container)
         gsap.set(ball, {
-            position: 'fixed',
-            left: ballRect.left,
-            top: ballRect.top,
+            position: 'absolute',
+            left: startLeft,
+            top: startTop,
             width: ballRect.width,
             height: ballRect.height,
             margin: 0,
             zIndex: 50
         });
 
-        // 2. Animate to EXACTLY ABOVE the target
-        // We use absolute coordinates now
-        const targetX = targetRect.left;
-        const targetY = targetRect.top - 40; // Hover 40px above
+        // 2. Animate to OFFSET OVERLAY position with ARC
+        const apexY = Math.min(startTop, targetTop) - 80; 
 
         tl.to(ball, {
-            left: targetX,
-            top: targetY,
-            x: 0, // Reset any previous transforms
-            y: 0,
-            backgroundColor: '#EF4444', // Red-500
-            duration: 1.5,
-            ease: "power2.inOut",
+            keyframes: {
+                "0%": { left: startLeft, top: startTop },
+                "50%": { left: (startLeft + targetLeftAdjusted) / 2, top: apexY, ease: "power1.out" },
+                "100%": { left: targetLeftAdjusted, top: targetTop, ease: "power1.in" }
+            },
+            backgroundColor: '#FF7F50', // Coral
+            duration: 1.2,
             rotate: 360,
         }, "move");
         
@@ -233,7 +237,7 @@ const EquationSolver = () => {
              ball.style.color = "white";
              ball.style.fontWeight = "bold";
              ball.style.fontSize = "16px";
-        }, "move+=0.7");
+        }, "move+=0.6");
     });
   };
 
@@ -244,11 +248,9 @@ const EquationSolver = () => {
     let targetBalls = [];
 
     if (equationType === 'total_minus_unknown') {
-        // Source is Right (moved to Left), Target is Left
         sourceBalls = rightBallsRef.current.slice(0, leftCount);
         targetBalls = leftBallsRef.current.slice(0, totalCount);
     } else {
-        // Source is Left (moved to Right), Target is Right
         sourceBalls = leftBallsRef.current.slice(0, leftCount);
         targetBalls = rightBallsRef.current.slice(0, totalCount);
     }
@@ -260,26 +262,29 @@ const EquationSolver = () => {
         }
     });
 
+    const containerRect = containerRef.current.getBoundingClientRect();
+
     sourceBalls.forEach((ball, i) => {
-        // Find the same target we used before
         const targetIndex = totalCount - 1 - i;
         const targetBall = targetBalls[targetIndex];
         
         if (!targetBall) return;
 
         const targetRect = targetBall.getBoundingClientRect();
+        // Cancellation: drop to exact center of target ball
+        const targetTop = targetRect.top - containerRect.top;
+        const targetLeft = targetRect.left - containerRect.left;
 
         // 1. Drop to collision
         tl.to(ball, {
-            top: targetRect.top, // Hit the target exactly
+            top: targetTop, 
+            left: targetLeft, // Ensure it centers perfectly
             duration: 0.4,
             ease: "bounce.out"
         }, "drop+=" + (i * 0.1));
         
-        // 2. Shake and Disappear (Simultaneous)
+        // 2. Shake and Disappear
         const shakeTimeline = gsap.timeline();
-        
-        // Shake target ball (Green)
         shakeTimeline.to(targetBall, {
             x: "+=5",
             yoyo: true,
@@ -287,7 +292,6 @@ const EquationSolver = () => {
             duration: 0.05
         });
 
-        // Shrink both
         tl.add(shakeTimeline, ">");
         
         tl.to([ball, targetBall], {
@@ -320,388 +324,228 @@ const EquationSolver = () => {
   };
 
   return (
-    <div className="min-h-screen font-sans text-slate-800 flex flex-col items-center relative"
+    <div className="min-h-screen font-sans text-slate-800 flex flex-col items-center relative w-full overflow-x-hidden"
          style={{ 
              fontFamily: '"Inter", sans-serif', 
-             background: 'linear-gradient(to bottom, #F0F9FF, #E0F2FE)', // Sky blue gradient
-             minHeight: '100vh', 
-             display: 'flex', 
-             flexDirection: 'column',
-             overflowY: 'auto',
-             overflowX: 'hidden'
+             background: 'linear-gradient(to bottom, #F0F9FF, #E0F2FE)',
          }}>
       
-      {/* Header / Nav */}
-      <div style={{ width: '100%', background: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'center' }}>
-          <div style={{ width: '100%', maxWidth: '600px', padding: '15px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Link to="/math" style={{ textDecoration: 'none', color: '#64748B', fontWeight: 'bold', marginRight: '15px' }}>← 返回</Link>
-                <h1 style={{ fontSize: '1.2rem', fontWeight: 'bold', background: 'linear-gradient(to right, #7C3AED, #DB2777)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: 0 }}>
+      {/* Header */}
+      <div className="w-full bg-white shadow-sm flex justify-center sticky top-0 z-40">
+          <div className="w-full max-w-4xl px-4 py-3 flex items-center justify-between">
+             <div className="flex items-center">
+                <Link to="/math" className="text-slate-500 font-bold mr-4 hover:text-slate-700 no-underline">← 返回</Link>
+                <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-pink-600 m-0">
                     解方程演示
                 </h1>
              </div>
           </div>
       </div>
 
-      {/* Formula Area */}
-      <div style={{ marginTop: '10px', marginBottom: '5px', minHeight: '100px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0px' }}>
+      {/* Main Content Area */}
+      <div className="flex-1 w-full max-w-4xl p-4 flex flex-col gap-6">
         
-        {/* Step 0: Input Mode */}
-        {step === 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-                <div style={{ fontSize: '2.5rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'KaTeX_Main, "Times New Roman", serif', marginBottom: '5px' }}>
-                    
-                    {equationType === 'unknown_plus_a' && (
-                        <>
-                            <span>?</span>
-                            <span style={{ color: '#10B981', margin: '0 5px' }}>+</span>
-                            <input 
-                                name="left"
-                                type="number"
-                                value={leftCount}
-                                onChange={handleConfigChange}
-                                placeholder="?"
-                                style={{ 
-                                    width: '80px', fontSize: '2.5rem', textAlign: 'center', 
-                                    border: 'none', borderBottom: '3px solid #10B981',
-                                    background: 'transparent', color: '#10B981', outline: 'none', fontWeight: 'bold'
-                                }}
-                            />
-                            <span style={{ margin: '0 5px' }}>=</span>
-                            <input 
-                                name="total"
-                                type="number"
-                                value={totalCount}
-                                onChange={handleConfigChange}
-                                placeholder="?"
-                                style={{ 
-                                    width: '80px', fontSize: '2.5rem', textAlign: 'center', 
-                                    border: 'none', borderBottom: '3px solid #334155',
-                                    background: 'transparent', color: '#334155', outline: 'none', fontWeight: 'bold'
-                                }}
-                            />
-                        </>
-                    )}
-
-                    {equationType === 'a_plus_unknown' && (
-                        <>
-                            <input 
-                                name="left"
-                                type="number"
-                                value={leftCount}
-                                onChange={handleConfigChange}
-                                placeholder="?"
-                                style={{ 
-                                    width: '80px', fontSize: '2.5rem', textAlign: 'center', 
-                                    border: 'none', borderBottom: '3px solid #10B981',
-                                    background: 'transparent', color: '#10B981', outline: 'none', fontWeight: 'bold'
-                                }}
-                            />
-                            <span style={{ color: '#10B981', margin: '0 5px' }}>+</span>
-                            <span>?</span>
-                            <span style={{ margin: '0 5px' }}>=</span>
-                            <input 
-                                name="total"
-                                type="number"
-                                value={totalCount}
-                                onChange={handleConfigChange}
-                                placeholder="?"
-                                style={{ 
-                                    width: '80px', fontSize: '2.5rem', textAlign: 'center', 
-                                    border: 'none', borderBottom: '3px solid #334155',
-                                    background: 'transparent', color: '#334155', outline: 'none', fontWeight: 'bold'
-                                }}
-                            />
-                        </>
-                    )}
-
-                    {equationType === 'total_minus_unknown' && (
-                        <>
-                            <input 
-                                name="total"
-                                type="number"
-                                value={totalCount}
-                                onChange={handleConfigChange}
-                                placeholder="?"
-                                style={{ 
-                                    width: '80px', fontSize: '2.5rem', textAlign: 'center', 
-                                    border: 'none', borderBottom: '3px solid #334155',
-                                    background: 'transparent', color: '#334155', outline: 'none', fontWeight: 'bold'
-                                }}
-                            />
-                            <span style={{ color: '#EF4444', margin: '0 5px' }}>-</span>
-                            <span>?</span>
-                            <span style={{ margin: '0 5px' }}>=</span>
-                            <input 
-                                name="left"
-                                type="number"
-                                value={leftCount}
-                                onChange={handleConfigChange}
-                                placeholder="?"
-                                style={{ 
-                                    width: '80px', fontSize: '2.5rem', textAlign: 'center', 
-                                    border: 'none', borderBottom: '3px solid #10B981',
-                                    background: 'transparent', color: '#10B981', outline: 'none', fontWeight: 'bold'
-                                }}
-                            />
-                        </>
-                    )}
-                </div>
-                
-                <button 
-                    onClick={() => {
-                        if (equationType === 'unknown_plus_a') setEquationType('a_plus_unknown');
-                        else if (equationType === 'a_plus_unknown') setEquationType('total_minus_unknown');
-                        else setEquationType('unknown_plus_a');
-                    }}
-                    style={{
-                        fontSize: '0.85rem',
-                        color: '#64748B',
-                        background: '#F1F5F9',
-                        border: '1px solid #E2E8F0',
-                        padding: '4px 12px',
-                        borderRadius: '20px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px',
-                        transition: 'all 0.2s',
-                        marginBottom: '10px'
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#E2E8F0'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = '#F1F5F9'; }}
-                >
-                    <span style={{ fontSize: '1rem' }}>⇄</span> 
-                    {equationType === 'unknown_plus_a' && "当前: ? + 数 = 总数"}
-                    {equationType === 'a_plus_unknown' && "当前: 数 + ? = 总数"}
-                    {equationType === 'total_minus_unknown' && "当前: 总数 - ? = 数"}
-                </button>
-            </div>
-        )}
-
-        {/* Step > 0: Display Mode */}
-        <div ref={formulaStep1Ref} style={{ fontSize: '2rem', display: step === 0 ? 'none' : 'block', lineHeight: '1.2' }}></div>
-        
-        {/* Step 2 Formula */}
-        <div ref={formulaStep2Ref} style={{ 
-            fontSize: '2rem', 
-            height: step >= 2 ? 'auto' : 0, 
-            opacity: step >= 2 ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'all 0.5s',
-            lineHeight: '1.2'
-        }}></div>
-
-        {/* Step 3 Formula */}
-        <div ref={formulaStep3Ref} style={{ 
-            fontSize: '2rem', 
-            height: step >= 3 ? 'auto' : 0, 
-            opacity: step >= 3 ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'all 0.5s',
-            lineHeight: '1.2'
-        }}></div>
-
-        <div ref={instructionRef} style={{ opacity: step === 0 ? 0 : 1, color: '#64748B', marginTop: '5px', fontSize: '1rem', transition: 'opacity 0.3s' }}>
-            {step === 1 && (
-                equationType === 'total_minus_unknown' 
-                ? `观察右边的 +${leftCount}...` 
-                : `观察左边的 +${leftCount}...`
-            )}
-            {step === 2 && (
-                equationType === 'total_minus_unknown'
-                ? `把 +${leftCount} 移到左边，它变成了 -${leftCount}！`
-                : `把 +${leftCount} 移到右边，它变成了 -${leftCount}！`
-            )}
-            {step === 3 && `正负抵消：+${leftCount} 和 -${leftCount} 相互消失了...`}
-            {step === 4 && `解题完成！? = ${totalCount - leftCount}`}
-        </div>
-      </div>
-
-      {/* Stage */}
-      <div key={resetKey} ref={containerRef} style={{ flex: 1, width: '100%', maxWidth: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '20px' }}>
-        
-        {/* Left Side Container */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px', border: '2px dashed #E2E8F0', borderRadius: '20px', marginRight: '10px', minHeight: '300px' }}>
-            
-            {equationType === 'total_minus_unknown' ? (
-                // Mode: 12 - ? = 6. Left side has TOTAL (12) balls.
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', width: '100%' }}>
-                    {Array.from({ length: totalCount }).map((_, i) => (
-                        <div 
-                            key={i}
-                            ref={el => leftBallsRef.current[i] = el}
-                            style={{
-                                width: '32px', height: '32px',
-                                background: '#10B981', // Green-500
-                                borderRadius: '50%',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                zIndex: 10
-                            }}
-                        />
-                    ))}
-                </div>
-            ) : (
-                // Mode: Addition. Left side has BOX and PART (6) balls.
-                <>
-                    {/* The ? Box */}
-                    <div style={{ 
-                        order: equationType === 'a_plus_unknown' ? 2 : 1,
-                        width: '80px', height: '80px', 
-                        background: '#8B5CF6', // Purple-500
-                        borderRadius: '16px', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'white', fontSize: '2rem', fontWeight: 'bold',
-                        boxShadow: '0 10px 15px -3px rgba(139, 92, 246, 0.3)'
-                    }}>
-                        ?
+        {/* Formula Card */}
+        <div className="bg-white/50 backdrop-blur-sm rounded-3xl p-6 shadow-sm flex flex-col items-center min-h-[160px] justify-center">
+            {/* Step 0: Input */}
+            {step === 0 && (
+                <div className="flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-2 font-bold font-serif text-3xl sm:text-4xl md:text-5xl">
+                        {equationType === 'unknown_plus_a' && (
+                            <>
+                                <span>?</span>
+                                <span className="text-sky-500 mx-1">+</span>
+                                <input 
+                                    name="left" type="number" value={leftCount} onChange={handleConfigChange} placeholder="?"
+                                    className="w-16 sm:w-20 text-center border-b-4 border-sky-500 bg-transparent text-sky-500 outline-none font-bold"
+                                />
+                                <span className="mx-1">=</span>
+                                <input 
+                                    name="total" type="number" value={totalCount} onChange={handleConfigChange} placeholder="?"
+                                    className="w-16 sm:w-20 text-center border-b-4 border-slate-700 bg-transparent text-slate-700 outline-none font-bold"
+                                />
+                            </>
+                        )}
+                        {equationType === 'a_plus_unknown' && (
+                            <>
+                                <input 
+                                    name="left" type="number" value={leftCount} onChange={handleConfigChange} placeholder="?"
+                                    className="w-16 sm:w-20 text-center border-b-4 border-sky-500 bg-transparent text-sky-500 outline-none font-bold"
+                                />
+                                <span className="text-sky-500 mx-1">+</span>
+                                <span>?</span>
+                                <span className="mx-1">=</span>
+                                <input 
+                                    name="total" type="number" value={totalCount} onChange={handleConfigChange} placeholder="?"
+                                    className="w-16 sm:w-20 text-center border-b-4 border-slate-700 bg-transparent text-slate-700 outline-none font-bold"
+                                />
+                            </>
+                        )}
+                        {equationType === 'total_minus_unknown' && (
+                            <>
+                                <input 
+                                    name="total" type="number" value={totalCount} onChange={handleConfigChange} placeholder="?"
+                                    className="w-16 sm:w-20 text-center border-b-4 border-slate-700 bg-transparent text-slate-700 outline-none font-bold"
+                                />
+                                <span className="text-coral-500 mx-1" style={{ color: '#FF7F50' }}>-</span>
+                                <span>?</span>
+                                <span className="mx-1">=</span>
+                                <input 
+                                    name="left" type="number" value={leftCount} onChange={handleConfigChange} placeholder="?"
+                                    className="w-16 sm:w-20 text-center border-b-4 border-sky-500 bg-transparent text-sky-500 outline-none font-bold"
+                                />
+                            </>
+                        )}
                     </div>
+                    
+                    <button 
+                        onClick={() => {
+                            if (equationType === 'unknown_plus_a') setEquationType('a_plus_unknown');
+                            else if (equationType === 'a_plus_unknown') setEquationType('total_minus_unknown');
+                            else setEquationType('unknown_plus_a');
+                        }}
+                        className="text-sm text-slate-500 bg-slate-100 border border-slate-200 px-4 py-2 rounded-full hover:bg-slate-200 transition-colors flex items-center gap-2 touch-manipulation active:scale-95"
+                    >
+                        <span>⇄</span> 
+                        {equationType === 'unknown_plus_a' && "当前: ? + 数 = 总数"}
+                        {equationType === 'a_plus_unknown' && "当前: 数 + ? = 总数"}
+                        {equationType === 'total_minus_unknown' && "当前: 总数 - ? = 数"}
+                    </button>
+                </div>
+            )}
 
-                    {/* The Green Balls (Part) */}
-                    <div style={{ 
-                        order: equationType === 'a_plus_unknown' ? 1 : 2,
-                        display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', width: '100%' 
-                    }}>
-                        {Array.from({ length: leftCount }).map((_, i) => (
+            {/* Formula Display Steps */}
+            <div ref={formulaStep1Ref} className={`text-2xl sm:text-3xl transition-all duration-500 ${step === 0 ? 'hidden' : 'block'}`}></div>
+            <div ref={formulaStep2Ref} className={`text-2xl sm:text-3xl transition-all duration-500 overflow-hidden ${step >= 2 ? 'opacity-100 max-h-20 mt-2' : 'opacity-0 max-h-0'}`}></div>
+            <div ref={formulaStep3Ref} className={`text-2xl sm:text-3xl transition-all duration-500 overflow-hidden ${step >= 3 ? 'opacity-100 max-h-20 mt-2' : 'opacity-0 max-h-0'}`}></div>
+
+            <div ref={instructionRef} className={`text-slate-500 mt-4 text-base sm:text-lg transition-opacity duration-300 ${step === 0 ? 'opacity-0' : 'opacity-100'}`}>
+                {step === 1 && (
+                    equationType === 'total_minus_unknown' 
+                    ? `观察右边的 +${leftCount}...` 
+                    : `观察左边的 +${leftCount}...`
+                )}
+                {step === 2 && (
+                    equationType === 'total_minus_unknown'
+                    ? `把 +${leftCount} 移到左边，它变成了 -${leftCount}！`
+                    : `把 +${leftCount} 移到右边，它变成了 -${leftCount}！`
+                )}
+                {step === 3 && `正负抵消：+${leftCount} 和 -${leftCount} 相互消失了...`}
+                {step === 4 && `解题完成！? = ${totalCount - leftCount}`}
+            </div>
+        </div>
+
+        {/* Stage Area (Responsive: Stack on mobile, Row on Desktop) */}
+        <div key={resetKey} ref={containerRef} className="bg-white rounded-3xl shadow-sm p-6 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4 relative min-h-[300px]">
+            
+            {/* Left Side */}
+            <div className="flex-1 w-full md:w-auto flex flex-col items-center p-4 border-2 border-dashed border-slate-200 rounded-2xl min-h-[150px] md:min-h-[300px]">
+                {equationType === 'total_minus_unknown' ? (
+                    <div className="flex flex-wrap gap-2 justify-center w-full">
+                        {Array.from({ length: totalCount }).map((_, i) => (
                             <div 
                                 key={i}
                                 ref={el => leftBallsRef.current[i] = el}
-                                style={{
-                                    width: '32px', height: '32px',
-                                    background: '#10B981', // Green-500
-                                    borderRadius: '50%',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                    zIndex: 10
-                                }}
+                                className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                style={{ backgroundColor: '#0EA5E9' }}
                             />
                         ))}
                     </div>
-                </>
-            )}
-        </div>
-
-        {/* Equals */}
-        <div style={{ fontSize: '2rem', color: '#CBD5E1', fontWeight: 'bold', margin: '0 5px' }}>
-            =
-        </div>
-
-        {/* Right Side Container */}
-        <div id="right-side-container" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '20px', border: '2px dashed #E2E8F0', borderRadius: '20px', marginLeft: '10px', minHeight: '300px' }}>
-             
-             {equationType === 'total_minus_unknown' ? (
-                 // Mode: 12 - ? = 6. Right side has PART (6) balls and BOX.
-                 <>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', width: '100%' }}>
-                        {Array.from({ length: leftCount }).map((_, i) => (
-                            <div 
-                                key={i}
-                                ref={el => rightBallsRef.current[i] = el}
-                                style={{
-                                    width: '32px', height: '32px',
-                                    background: '#10B981', // Green-500
-                                    borderRadius: '50%',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                    zIndex: 10
-                                }}
-                            />
-                        ))}
+                ) : (
+                    <div className="flex flex-col md:flex-col items-center gap-4 w-full">
+                         {/* Flex ordering based on equation type */}
+                        <div className={`flex flex-wrap gap-2 justify-center w-full ${equationType === 'a_plus_unknown' ? 'order-1' : 'order-2'}`}>
+                            {Array.from({ length: leftCount }).map((_, i) => (
+                                <div 
+                                    key={i}
+                                    ref={el => leftBallsRef.current[i] = el}
+                                    className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                    style={{ backgroundColor: '#0EA5E9' }}
+                                />
+                            ))}
+                        </div>
+                        <div className={`bg-violet-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg
+                                        w-16 h-16 sm:w-20 sm:h-20 shrink-0 ${equationType === 'a_plus_unknown' ? 'order-2' : 'order-1'}`}>
+                            {step >= 3 ? (totalCount - leftCount) : '?'}
+                        </div>
                     </div>
+                )}
+            </div>
 
-                    {/* The ? Box */}
-                    <div style={{ 
-                        width: '80px', height: '80px', 
-                        background: '#8B5CF6', // Purple-500
-                        borderRadius: '16px', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'white', fontSize: '2rem', fontWeight: 'bold',
-                        boxShadow: '0 10px 15px -3px rgba(139, 92, 246, 0.3)'
-                    }}>
-                        ?
-                    </div>
-                 </>
-             ) : (
-                 // Mode: Addition. Right side has TOTAL (12) balls.
-                 <>
-                    {/* Spacer to align with X visually roughly */}
-                    <div style={{ width: '80px', height: '80px', visibility: 'hidden' }}></div>
+            {/* Equals Sign */}
+            <div className="text-3xl text-slate-300 font-bold rotate-90 md:rotate-0 my-2 md:my-0 shrink-0">
+                =
+            </div>
 
-                    {/* The Green Balls (Total) */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', width: '100%' }}>
+            {/* Right Side */}
+            <div id="right-side-container" className="flex-1 w-full md:w-auto flex flex-col items-center p-4 border-2 border-dashed border-slate-200 rounded-2xl min-h-[150px] md:min-h-[300px]">
+                 {equationType === 'total_minus_unknown' ? (
+                     <div className="flex flex-col items-center gap-4 w-full">
+                        <div className="flex flex-wrap gap-2 justify-center w-full">
+                            {Array.from({ length: leftCount }).map((_, i) => (
+                                <div 
+                                    key={i}
+                                    ref={el => rightBallsRef.current[i] = el}
+                                    className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                    style={{ backgroundColor: '#0EA5E9' }}
+                                />
+                            ))}
+                        </div>
+                        <div className="bg-violet-500 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg w-16 h-16 sm:w-20 sm:h-20 shrink-0">
+                            {step >= 3 ? (totalCount - leftCount) : '?'}
+                        </div>
+                     </div>
+                 ) : (
+                    <div className="flex flex-wrap gap-2 justify-center w-full">
                         {Array.from({ length: totalCount }).map((_, i) => (
                             <div 
                                 key={i}
                                 ref={el => rightBallsRef.current[i] = el}
-                                style={{
-                                    width: '32px', height: '32px',
-                                    background: '#10B981', // Green-500
-                                    borderRadius: '50%',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                }}
+                                className="bg-sky-500 rounded-full shadow-sm z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-8 md:h-8 lg:w-10 lg:h-10 shrink-0"
+                                style={{ backgroundColor: '#0EA5E9' }}
                             />
                         ))}
                     </div>
-                 </>
-             )}
+                 )}
+            </div>
         </div>
 
-      </div>
-
-      {/* Controls */}
-      <div style={{ width: '100%', background: 'white', boxShadow: '0 -4px 6px -1px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'center', zIndex: 20 }}>
-          <div style={{ width: '100%', maxWidth: '600px', padding: '30px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 pb-8">
             <button 
                 onClick={handleNextStep}
                 disabled={isAnimating || step >= 3}
-                style={{
-                    background: (isAnimating || step >= 3) ? '#E2E8F0' : '#3B82F6', // Blue-500
-                    color: (isAnimating || step >= 3) ? '#94A3B8' : 'white',
-                    padding: '16px 40px',
-                    borderRadius: '50px',
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    border: 'none',
-                    cursor: (isAnimating || step >= 3) ? 'default' : 'pointer',
-                    transition: 'transform 0.1s',
-                    boxShadow: (isAnimating || step >= 3) ? 'none' : '0 10px 15px -3px rgba(59, 130, 246, 0.3)'
-                }}
+                className={`
+                    px-8 py-4 rounded-full text-lg font-bold shadow-lg transition-all touch-manipulation active:scale-95
+                    ${(isAnimating || step >= 3) 
+                        ? 'bg-slate-200 text-slate-400 cursor-default shadow-none' 
+                        : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-blue-500/30'}
+                `}
+                style={{ minHeight: '48px' }}
             >
                 {getButtonText()}
             </button>
 
-            <button 
-                onClick={resetScene}
-                disabled={isAnimating}
-                style={{
-                    background: 'white',
-                    border: '2px solid #E2E8F0',
-                    color: '#64748B',
-                    padding: '16px 30px',
-                    borderRadius: '50px',
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    cursor: isAnimating ? 'default' : 'pointer',
-                    opacity: isAnimating ? 0.5 : 1
-                }}
-            >
-                再次演示
-            </button>
+            <div className="flex gap-4 justify-center">
+                <button 
+                    onClick={resetScene}
+                    disabled={isAnimating}
+                    className="px-6 py-4 rounded-full font-bold bg-white border-2 border-slate-200 text-slate-500 hover:bg-slate-50 transition-all touch-manipulation active:scale-95"
+                    style={{ minHeight: '48px', opacity: isAnimating ? 0.5 : 1 }}
+                >
+                    再次演示
+                </button>
 
-            <button 
-                onClick={reset}
-                style={{
-                    background: 'white',
-                    border: '2px solid #E2E8F0',
-                    color: '#64748B',
-                    padding: '16px 30px',
-                    borderRadius: '50px',
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    cursor: 'pointer'
-                }}
-            >
-                重置
-            </button>
-          </div>
+                <button 
+                    onClick={reset}
+                    className="px-6 py-4 rounded-full font-bold bg-white border-2 border-slate-200 text-slate-500 hover:bg-slate-50 transition-all touch-manipulation active:scale-95"
+                    style={{ minHeight: '48px' }}
+                >
+                    重置
+                </button>
+            </div>
+        </div>
+
       </div>
     </div>
   );
