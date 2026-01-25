@@ -19,14 +19,35 @@ const EquationSolver = () => {
   const formulaStep2Ref = useRef(null);
   const formulaStep3Ref = useRef(null);
   const instructionRef = useRef(null);
+  const audioCtxRef = useRef(null);
+  const leftWrapperRef = useRef(null);
+  const rightWrapperRef = useRef(null);
+
+  // Initialize Audio Context on user interaction
+  const initAudio = () => {
+    if (!audioCtxRef.current) {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                audioCtxRef.current = new AudioContext();
+            }
+        } catch (e) {
+            console.error("Audio Context init failed", e);
+        }
+    }
+    
+    // Resume context if suspended (needed for iOS)
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume();
+    }
+  };
 
   // Sound Effects Helper using Web Audio API
   const playSound = (type) => {
     try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
+        const ctx = audioCtxRef.current;
+        if (!ctx) return;
         
-        const ctx = new AudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         
@@ -248,6 +269,18 @@ const EquationSolver = () => {
     // Get Container Rect for Relative Calculation
     const containerRect = containerRef.current.getBoundingClientRect();
 
+    // Lock dimensions to prevent layout shift when balls become absolute
+    if (leftWrapperRef.current) {
+        const rect = leftWrapperRef.current.getBoundingClientRect();
+        leftWrapperRef.current.style.height = `${rect.height}px`;
+        leftWrapperRef.current.style.width = `${rect.width}px`;
+    }
+    if (rightWrapperRef.current) {
+        const rect = rightWrapperRef.current.getBoundingClientRect();
+        rightWrapperRef.current.style.height = `${rect.height}px`;
+        rightWrapperRef.current.style.width = `${rect.width}px`;
+    }
+
     sourceBalls.forEach((ball, i) => {
         if (!ball) return;
         
@@ -266,12 +299,9 @@ const EquationSolver = () => {
         const targetLeft = targetRect.left - containerRect.left;
         
         // Offset Overlay Strategy:
-        // Instead of floating 40px above (which causes overlap on multiline),
-        // we overlay on the top-right corner of the target ball.
-        // Target ball size is roughly 32px-40px.
-        // We offset by x: +10, y: -10 to show it's "attached" but distinct.
-        const targetTop = (targetRect.top - containerRect.top) - 15; 
-        const targetLeftAdjusted = targetLeft + 15;
+        // We want them to overlap perfectly (center-to-center) as per user request.
+        const targetTop = targetRect.top - containerRect.top;
+        const targetLeftAdjusted = targetLeft;
 
         // 1. Switch to Absolute Position (Relative to Container)
         gsap.set(ball, {
@@ -378,8 +408,10 @@ const EquationSolver = () => {
     tl.add(() => {
         // Find remaining balls (indices >= leftCount)
         const remainingBalls = [];
-        for (let i = leftCount; i < rightBallsRef.current.length; i++) {
-            if (rightBallsRef.current[i]) remainingBalls.push(rightBallsRef.current[i]);
+        const allTargetBalls = (equationType === 'total_minus_unknown') ? leftBallsRef.current : rightBallsRef.current;
+        
+        for (let i = leftCount; i < allTargetBalls.length; i++) {
+            if (allTargetBalls[i]) remainingBalls.push(allTargetBalls[i]);
         }
         
         if (remainingBalls.length === 0) return;
@@ -431,6 +463,7 @@ const EquationSolver = () => {
   };
 
   const handleNextStep = () => {
+      initAudio(); // Initialize/Resume Audio Context on interaction
       if (isAnimating) return;
       if (step === 0) runFocusAnimation();
       else if (step === 1) runTranspositionAnimation();
@@ -568,7 +601,7 @@ const EquationSolver = () => {
             {/* Left Side */}
             <div className="flex-1 w-full md:w-auto flex flex-col items-center p-4 border-2 border-dashed border-slate-200 rounded-2xl min-h-[150px] md:min-h-[300px]">
                 {equationType === 'total_minus_unknown' ? (
-                    <div className="flex flex-wrap gap-2 justify-center w-full">
+                    <div ref={leftWrapperRef} className="flex flex-wrap gap-2 justify-center w-full">
                         {Array.from({ length: totalCount }).map((_, i) => (
                             <div 
                                 key={i}
@@ -583,7 +616,7 @@ const EquationSolver = () => {
                 ) : (
                     <div className="flex flex-col md:flex-col items-center gap-4 w-full">
                          {/* Flex ordering based on equation type */}
-                        <div className={`flex flex-wrap gap-2 justify-center w-full ${equationType === 'a_plus_unknown' ? 'order-1' : 'order-2'}`}>
+                        <div ref={leftWrapperRef} className={`flex flex-wrap gap-2 justify-center w-full ${equationType === 'a_plus_unknown' ? 'order-1' : 'order-2'}`}>
                             {Array.from({ length: leftCount }).map((_, i) => (
                                 <div 
                                     key={i}
@@ -612,7 +645,7 @@ const EquationSolver = () => {
             <div id="right-side-container" className="flex-1 w-full md:w-auto flex flex-col items-center p-4 border-2 border-dashed border-slate-200 rounded-2xl min-h-[150px] md:min-h-[300px]">
                  {equationType === 'total_minus_unknown' ? (
                      <div className="flex flex-col items-center gap-4 w-full">
-                        <div className="flex flex-wrap gap-2 justify-center w-full">
+                        <div ref={rightWrapperRef} className="flex flex-wrap gap-2 justify-center w-full">
                             {Array.from({ length: leftCount }).map((_, i) => (
                                 <div 
                                     key={i}
@@ -629,7 +662,7 @@ const EquationSolver = () => {
                         </div>
                      </div>
                  ) : (
-                    <div className="flex flex-wrap gap-2 justify-center w-full">
+                    <div ref={rightWrapperRef} className="flex flex-wrap gap-2 justify-center w-full">
                         {Array.from({ length: totalCount }).map((_, i) => (
                             <div 
                                 key={i}
