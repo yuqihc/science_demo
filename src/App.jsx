@@ -10,7 +10,6 @@ import MathAddSubtract from './pages/MathAddSubtract';
 import MathCarryAdd from './pages/MathCarryAdd';
 import SolidShapes from './pages/SolidShapes';
 import EquationSolver from './pages/math/EquationSolver';
-import PlaceValue from './pages/math/PlaceValue';
 import PlaceValue2D from './pages/math/PlaceValue2D';
 
 function App() {
@@ -29,7 +28,6 @@ function App() {
         <Route path="/math/carry-add" element={<MathCarryAdd />} />
         <Route path="/math/solid-shapes" element={<SolidShapes />} />
         <Route path="/math/equation-solver" element={<EquationSolver />} />
-        <Route path="/math/place-value" element={<PlaceValue />} />
         <Route path="/math/place-value-2d" element={<PlaceValue2D />} />
         
         {/* Placeholder for other routes */}

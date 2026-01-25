@@ -162,15 +162,6 @@ function MathHome() {
       cta: "开始探索"
     },
     {
-      to: "/math/place-value",
-      icon: "🔢",
-      color: "#F59E0B",
-      bg: "linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)",
-      title: "数字分解 (10-99)",
-      desc: "认识两位数的组成，明白“几个十”和“几个一”。",
-      cta: "开始分解"
-    },
-    {
       to: "/math/place-value-2d",
       icon: "🎨",
       color: "#8B5CF6",
