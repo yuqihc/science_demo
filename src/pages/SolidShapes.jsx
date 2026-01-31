@@ -63,6 +63,22 @@ const NETS = [
     }
   },
   {
+    id: '141_c', label: '1-4-1 (错位型2)',
+    structure: {
+      face: 'bottom_green',
+      children: [
+        { face: 'back_yellow', side: 'top', children: [
+           { face: 'top_green', side: 'top', children: [
+                { face: 'left_purple', side: 'left' }
+           ]}
+        ]},
+        { face: 'front_blue', side: 'bottom', children: [
+           { face: 'right_red', side: 'left' }
+        ]}
+      ]
+    }
+  },
+  {
       id: '141_d', label: '1-4-1 (错位型3)',
       structure: {
           face: 'bottom_green',
