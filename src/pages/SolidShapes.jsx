@@ -845,7 +845,7 @@ const SolidShapes = () => {
     
     // Ensure valid net selection when switching to Cuboid
     if (currentShape === 'cuboid') {
-        const validCuboidNets = ['141_a', '222'];
+        const validCuboidNets = ['141_a'];
         if (!validCuboidNets.includes(selectedNet)) {
             setSelectedNet('141_a');
         }
@@ -956,7 +956,7 @@ const SolidShapes = () => {
 
   // Filter available nets based on shape
   const availableNets = currentShape === 'cuboid' 
-      ? NETS.filter(n => ['141_a', '222'].includes(n.id))
+      ? NETS.filter(n => ['141_a'].includes(n.id))
       : NETS;
 
   return (
@@ -1063,7 +1063,7 @@ const SolidShapes = () => {
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.5)',
                 borderRight: 'none',
-                maxHeight: '30vh',
+                maxHeight: '60vh',
                 overflowY: 'auto',
                 width: '220px',
                 display: 'flex',
