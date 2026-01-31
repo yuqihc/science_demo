@@ -23,12 +23,12 @@ class SilentErrorBoundary extends React.Component {
 // --- Constants & Data ---
 
 const FACE_CONFIGS = {
-  bottom: { name: '底面', color: '#4CAF50' },
-  top:    { name: '顶面', color: '#4CAF50' },
-  front:  { name: '前面', color: '#2196F3' },
-  back:   { name: '后面', color: '#FFC107' },
-  left:   { name: '左面', color: '#9C27B0' },
-  right:  { name: '右面', color: '#F44336' },
+  bottom_green: { name: '底面_green', color: '#4CAF50' },
+  top_green:    { name: '顶面_green', color: '#4CAF50' },
+  front_blue:   { name: '前面_blue', color: '#2196F3' },
+  back_yellow:  { name: '后面_yellow', color: '#FFC107' },
+  left_purple:  { name: '左面_purple', color: '#9C27B0' },
+  right_red:    { name: '右面_red', color: '#F44336' },
 };
 
 // The 11 Nets of a Cube (defined as trees starting from 'bottom')
@@ -37,73 +37,73 @@ const NETS = [
   {
     id: '141_a', label: '1-4-1 (基础型/Cross)',
     structure: {
-      face: 'bottom',
+      face: 'bottom_green',
       children: [
-        { face: 'back', side: 'top', children: [
-           { face: 'top', side: 'top' }
+        { face: 'back_yellow', side: 'top', children: [
+           { face: 'top_green', side: 'top' }
         ]},
-        { face: 'front', side: 'bottom' },
-        { face: 'left', side: 'left' },
-        { face: 'right', side: 'right' }
+        { face: 'front_blue', side: 'bottom' },
+        { face: 'left_purple', side: 'left' },
+        { face: 'right_red', side: 'right' }
       ]
     }
   },
   {
     id: '141_b', label: '1-4-1 (错位型1)',
     structure: {
-      face: 'bottom',
+      face: 'bottom_green',
       children: [
-        { face: 'back', side: 'top', children: [
-           { face: 'top', side: 'top' },
-           { face: 'left', side: 'left' }
+        { face: 'back_yellow', side: 'top', children: [
+           { face: 'top_green', side: 'top' },
+           { face: 'left_purple', side: 'left' }
         ]},
-        { face: 'front', side: 'bottom' },
-        { face: 'right', side: 'right' }
+        { face: 'front_blue', side: 'bottom' },
+        { face: 'right_red', side: 'right' }
       ]
     }
   },
   {
       id: '141_d', label: '1-4-1 (错位型3)',
       structure: {
-          face: 'bottom',
+          face: 'bottom_green',
           children: [
-              { face: 'back', side: 'top', children: [
-                  { face: 'top', side: 'top' }
+              { face: 'back_yellow', side: 'top', children: [
+                  { face: 'top_green', side: 'top' }
               ]},
-              { face: 'front', side: 'bottom', children: [
-                  { face: 'right', side: 'right' }
+              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'right_red', side: 'left' }
               ]},
-              { face: 'left', side: 'left' }
+              { face: 'left_purple', side: 'left' }
           ]
       }
   },
   {
       id: '141_e', label: '1-4-1 (错位型4)',
       structure: {
-          face: 'bottom',
+          face: 'bottom_green',
           children: [
-              { face: 'back', side: 'top', children: [
-                  { face: 'top', side: 'top' }
+              { face: 'back_yellow', side: 'top', children: [
+                  { face: 'top_green', side: 'top' },
+                  { face: 'right_red', side: 'left' }
               ]},
-              { face: 'front', side: 'bottom', children: [
-                  { face: 'left', side: 'left' }
-              ]},
-              { face: 'right', side: 'right' }
+              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'left_purple', side: 'left' }
+              ]}
           ]
       }
   },
   {
     id: '141_f', label: '1-4-1 (长条型)',
     structure: {
-        face: 'bottom',
+        face: 'bottom_green',
         children: [
-            { face: 'back', side: 'top', children: [
-                { face: 'top', side: 'top', children: [
-                    { face: 'front', side: 'top' }
+            { face: 'back_yellow', side: 'top', children: [
+                { face: 'top_green', side: 'top', children: [
+                    { face: 'front_blue', side: 'top' }
                 ]}
             ]},
-            { face: 'left', side: 'left' },
-            { face: 'right', side: 'right' }
+            { face: 'left_purple', side: 'left' },
+            { face: 'right_red', side: 'right' }
         ]
     }
   },
@@ -112,13 +112,13 @@ const NETS = [
   {
       id: '231_a', label: '2-3-1 (型A)',
       structure: {
-          face: 'bottom',
+          face: 'bottom_green',
           children: [
-              { face: 'left', side: 'left' },
-              { face: 'right', side: 'right' },
-              { face: 'back', side: 'top' },
-              { face: 'front', side: 'bottom', children: [
-                  { face: 'top', side: 'bottom' }
+              { face: 'left_purple', side: 'left' },
+              { face: 'right_red', side: 'right' },
+              { face: 'back_yellow', side: 'top' },
+              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'top_green', side: 'bottom' }
               ]}
           ]
       }
@@ -126,43 +126,44 @@ const NETS = [
   {
       id: '231_b', label: '2-3-1 (型B)',
       structure: {
-          face: 'bottom',
+          face: 'bottom_green',
           children: [
-              { face: 'left', side: 'left', children: [
-                  { face: 'top', side: 'top' } // Top attached to Left
+              { face: 'left_purple', side: 'left', children: [
+                  { face: 'top_green', side: 'top' } // Top attached to Left
               ]},
-              { face: 'right', side: 'right' },
-              { face: 'back', side: 'top' },
-              { face: 'front', side: 'bottom' }
+              { face: 'right_red', side: 'right' },
+              { face: 'back_yellow', side: 'top' },
+              { face: 'front_blue', side: 'bottom' }
           ]
       }
   },
   {
       id: '231_c', label: '2-3-1 (型C)',
       structure: {
-          face: 'bottom',
+          face: 'bottom_green',
           children: [
-              { face: 'left', side: 'left' },
-              { face: 'right', side: 'right', children: [
-                  { face: 'top', side: 'top' } // Top attached to Right
+              { face: 'left_purple', side: 'left' },
+              { face: 'right_red', side: 'right', children: [
+                  { face: 'top_green', side: 'top' } // Top attached to Right
               ]},
-              { face: 'back', side: 'top' },
-              { face: 'front', side: 'bottom' }
+              { face: 'back_yellow', side: 'top' },
+              { face: 'front_blue', side: 'bottom' }
           ]
       }
   },
 
   // --- 2-2-2 Type (1 variation) ---
   {
-    id: '222', label: '1-4-1 (错位型)',
+    id: '222', label: '2-2-2 (楼梯型)',
     structure: {
-        face: 'bottom',
+        face: 'bottom_green',
         children: [
-            { face: 'left', side: 'left' },
-            { face: 'back', side: 'top', children: [
-                { face: 'top', side: 'top', children: [
-                    { face: 'right', side: 'right' },
-                    { face: 'front', side: 'top' }
+            { face: 'back_yellow', side: 'right' },
+            { face: 'right_red', side: 'top', children: [
+                { face: 'front_blue', side: 'left', children: [
+                    { face: 'top_green', side: 'right', children: [
+                        { face: 'left_purple', side: 'left' }
+                    ]}
                 ]}
             ]}
         ]
@@ -170,30 +171,31 @@ const NETS = [
   },
 
   // --- 3-3 Type (1 variation) ---
-  {
-      id: '33', label: '3-3 (两排型)',
-      structure: {
-          face: 'bottom',
-          children: [
-              { face: 'left', side: 'left' },
-              { face: 'right', side: 'right' },
-              { face: 'front', side: 'bottom', children: [
-                  { face: 'top', side: 'right', children: [
-                      { face: 'back', side: 'right' }
-                  ]}
-              ]}
-          ]
-      }
-  }
+    {
+        id: '33', label: '3-3 (两排型)',
+        structure: {
+            face: 'bottom_green',
+            children: [
+                { face: 'left_purple', side: 'left', children: [
+                    { face: 'front_blue', side: 'left', children: [
+                        { face: 'top_green', side: 'right', children: [
+                            { face: 'back_yellow', side: 'top' }
+                        ]}
+                    ]}
+                ]},
+                { face: 'right_red', side: 'right' }
+            ]
+        }
+    }
 ];
 
 // Helper to get dimensions based on face type and box size [w, h, d]
 // Note: "Top/Bottom" are WxD. "Front/Back" are WxH. "Left/Right" are DxH.
 const getFaceDims = (face, [w, h, d]) => {
   switch(face) {
-    case 'bottom': case 'top': return [w, d];
-    case 'front': case 'back': return [w, h];
-    case 'left': case 'right': return [d, h];
+    case 'bottom_green': case 'top_green': return [w, d];
+    case 'front_blue': case 'back_yellow': return [w, h];
+    case 'left_purple': case 'right_red': return [d, h];
     default: return [1, 1];
   }
 };

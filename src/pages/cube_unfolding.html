@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正方体 11 种展开型全解析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .shape-card:hover {
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+        .cube-square {
+            stroke: #334155;
+            stroke-width: 2;
+        }
+        svg {
+            filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans leading-relaxed">
+
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        <!-- 标题区域 -->
+        <header class="mb-12 border-b border-slate-200 pb-8">
+            <h1 class="text-3xl font-extrabold mb-4 text-slate-800">正方体平面展开图 11 种基本类型 (修正版)</h1>
+            <div class="flex flex-wrap gap-4 text-sm">
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">11 种基本型</span>
+                <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">一线不过四</span>
+                <span class="px-3 py-1 bg-rose-100 text-rose-700 rounded-full font-medium">田凹应弃之</span>
+            </div>
+        </header>
+
+        <!-- 分类展示 -->
+        <div class="space-y-16">
+
+            <!-- 1-4-1 型 -->
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
+                    <h2 class="text-2xl font-bold italic">“141”型 (共 6 种)</h2>
+                    <span class="text-slate-500 text-sm">—— 中间四连方，两侧各一个</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    <!-- 141-1-->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="0" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="90" y="30" width="30" height="30" />
+                                <rect x="0" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 141-2-->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="30" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="90" y="30" width="30" height="30" />
+                                <rect x="0" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 141-3-->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="60" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="90" y="30" width="30" height="30" />
+                                <rect x="0" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 141-4-->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="90" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="90" y="30" width="30" height="30" />
+                                <rect x="0" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 141-5-->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="30" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="90" y="30" width="30" height="30" />
+                                <rect x="30" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 141-6-->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="60" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="90" y="30" width="30" height="30" />
+                                <rect x="30" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2-3-1 型 -->
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="w-2 h-8 bg-emerald-500 rounded-full"></span>
+                    <h2 class="text-2xl font-bold italic">“231”型 (共 3 种)</h2>
+                    <span class="text-slate-500 text-sm">—— 三二一结构</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    <!-- 231-1 -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="0" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="60" y="60" width="30" height="30" />
+                                <rect x="90" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 231-2 -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="30" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="60" y="60" width="30" height="30" />
+                                <rect x="90" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                    <!-- 231-3 -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card">
+                        <svg viewBox="0 0 160 120" class="w-full h-auto">
+                            <g class="cube-square" fill="#fef08a">
+                                <rect x="60" y="0" width="30" height="30" />
+                                <rect x="0" y="30" width="30" height="30" />
+                                <rect x="30" y="30" width="30" height="30" />
+                                <rect x="60" y="30" width="30" height="30" />
+                                <rect x="60" y="60" width="30" height="30" />
+                                <rect x="90" y="60" width="30" height="30" />
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2-2-2 型 & 3-3 型 -->
+            <section>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="w-2 h-8 bg-amber-500 rounded-full"></span>
+                            <h2 class="text-2xl font-bold italic">“222”型 (1 种)</h2>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card w-48">
+                            <svg viewBox="0 0 160 120" class="w-full h-auto">
+                                <g class="cube-square" fill="#fef08a">
+                                    <rect x="0" y="0" width="30" height="30" />
+                                    <rect x="30" y="0" width="30" height="30" />
+                                    <rect x="30" y="30" width="30" height="30" />
+                                    <rect x="60" y="30" width="30" height="30" />
+                                    <rect x="60" y="60" width="30" height="30" />
+                                    <rect x="90" y="60" width="30" height="30" />
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="w-2 h-8 bg-indigo-500 rounded-full"></span>
+                            <h2 class="text-2xl font-bold italic">“33”型 (1 种)</h2>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 shape-card w-56">
+                            <svg viewBox="0 0 160 120" class="w-full h-auto">
+                                <g class="cube-square" fill="#fef08a">
+                                    <rect x="0" y="30" width="30" height="30" />
+                                    <rect x="30" y="30" width="30" height="30" />
+                                    <rect x="60" y="30" width="30" height="30" />
+                                    <rect x="60" y="60" width="30" height="30" />
+                                    <rect x="90" y="60" width="30" height="30" />
+                                    <rect x="120" y="60" width="30" height="30" />
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 判断技巧卡片 -->
+        <footer class="mt-20 grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-800 text-slate-200 p-8 rounded-2xl">
+                <h4 class="text-xl font-bold mb-4 text-white">💡 快速判断依据</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-2">
+                        <span class="text-emerald-400 font-bold">●</span>
+                        <span><b>一线不过四：</b> 同一行或一列中，相连的正方形不能超过 4 个。</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-rose-400 font-bold">●</span>
+                        <span><b>田凹应弃之：</b> 展开图中如果出现了“田”字形或“凹”字形结构，则一定不能折成正方体。</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-blue-600 text-white p-8 rounded-2xl flex flex-col justify-center">
+                <h4 class="text-xl font-bold mb-2">口诀记忆</h4>
+                <p class="text-blue-100 text-lg italic">
+                    “中间四个一连排，两旁各一任意挂”<br>
+                    “二三紧连一适当，两二三行阶梯状”
+                </p>
+            </div>
+        </footer>
+    </div>
+
+</body>
+</html>
