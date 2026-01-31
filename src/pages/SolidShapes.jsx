@@ -84,12 +84,12 @@ const NETS = [
           face: 'bottom_green',
           children: [
               { face: 'back_yellow', side: 'top', children: [
-                  { face: 'top_green', side: 'top' }
-              ]},
-              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'top_green', side: 'top' },
                   { face: 'right_red', side: 'left' }
               ]},
-              { face: 'left_purple', side: 'left' }
+              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'left_purple', side: 'left' }
+              ]}
           ]
       }
   },
@@ -99,12 +99,12 @@ const NETS = [
           face: 'bottom_green',
           children: [
               { face: 'back_yellow', side: 'top', children: [
-                  { face: 'top_green', side: 'top' },
-                  { face: 'right_red', side: 'left' }
+                  { face: 'top_green', side: 'top' }
               ]},
               { face: 'front_blue', side: 'bottom', children: [
-                  { face: 'left_purple', side: 'left' }
-              ]}
+                  { face: 'right_red', side: 'left' }
+              ]},
+              { face: 'left_purple', side: 'left' }
           ]
       }
   },
@@ -125,17 +125,20 @@ const NETS = [
   },
 
   // --- 2-3-1 Types (3 variations) ---
-  {
-      id: '231_a', label: '2-3-1 (型A)',
-      structure: {
+    {
+        id: '231_a', label: '2-3-1 (型A)',
+        structure: {
           face: 'bottom_green',
           children: [
-              { face: 'left_purple', side: 'left' },
-              { face: 'right_red', side: 'right' },
-              { face: 'back_yellow', side: 'top' },
+              { face: 'left_purple', side: 'left', children: [
+                  { face: 'top_green', side: 'top', children: [
+                  { face: 'back_yellow', side: 'right' }
+              ]  },
+                  //{ face: 'back_yellow', side: 'right' },
+              ]},
               { face: 'front_blue', side: 'bottom', children: [
-                  { face: 'top_green', side: 'bottom' }
-              ]}
+                  { face: 'right_red', side: 'left' }
+              ] }
           ]
       }
   },
@@ -145,11 +148,12 @@ const NETS = [
           face: 'bottom_green',
           children: [
               { face: 'left_purple', side: 'left', children: [
-                  { face: 'top_green', side: 'top' } // Top attached to Left
+                  { face: 'top_green', side: 'top' },
+                  { face: 'back_yellow', side: 'right' },
               ]},
-              { face: 'right_red', side: 'right' },
-              { face: 'back_yellow', side: 'top' },
-              { face: 'front_blue', side: 'bottom' }
+              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'right_red', side: 'left' }
+              ] }
           ]
       }
   },
@@ -158,12 +162,15 @@ const NETS = [
       structure: {
           face: 'bottom_green',
           children: [
-              { face: 'left_purple', side: 'left' },
-              { face: 'right_red', side: 'right', children: [
-                  { face: 'top_green', side: 'top' } // Top attached to Right
-              ]},
+              { face: 'left_purple', side: 'left', children: [
+                  { face: 'top_green', side: 'top' }
+                ]
+              },
+              //{ face: 'right_red', side: 'right'},
               { face: 'back_yellow', side: 'top' },
-              { face: 'front_blue', side: 'bottom' }
+              { face: 'front_blue', side: 'bottom', children: [
+                  { face: 'right_red', side: 'left' }
+                ] }
           ]
       }
   },
