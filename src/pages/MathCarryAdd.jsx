@@ -7,16 +7,15 @@ const playPopSound = () => {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
-        
+
         const ctx = new AudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
-        // 产生一个清脆的“波”声
         osc.frequency.setValueAtTime(600, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.15);
-        
+
         gain.gain.setValueAtTime(0.2, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
 
@@ -30,168 +29,263 @@ const playPopSound = () => {
     }
 };
 
-// ==========================================
-// 凑十法模块 (Make Ten Method)
-// ==========================================
-const MakeTenModule = ({ iconType }) => {
-    const [num1, setNum1] = useState(9); // 大数
-    const [num2, setNum2] = useState(4); // 小数
-    const [step, setStep] = useState(0); // 0:初始, 1:找缺口, 2:拆小数, 3:移动凑十, 4:完成
-    const [narration, setNarration] = useState('我们来学习“凑十法”！先看左边有几个？');
-    const [cellSize, setCellSize] = useState(window.innerWidth < 500 ? 45 : 60);
+const playSuccessSound = () => {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const gain = ctx.createGain();
+        gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setCellSize(window.innerWidth < 500 ? 45 : 60);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-    
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        const now = ctx.currentTime;
+
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            osc.connect(gain);
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.15);
+        });
+
+        gain.gain.setValueAtTime(0.2, now + 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+    } catch (e) {
+        console.error("Audio play failed", e);
+    }
+};
+
+// 步骤进度指示器组件
+const StepIndicator = ({ currentStep, totalSteps }) => {
+    const steps = ['开始', '找缺口', '拆小数', '凑成十', '计算', '完成'];
+
+    return (
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '8px',
+            marginBottom: '20px',
+            flexWrap: 'wrap',
+            padding: '0 10px'
+        }}>
+            {steps.map((label, i) => (
+                <div key={i} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px'
+                }}>
+                    <div style={{
+                        width: currentStep === i ? '32px' : '24px',
+                        height: currentStep === i ? '32px' : '24px',
+                        borderRadius: '50%',
+                        background: i <= currentStep
+                            ? 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)'
+                            : '#E0E0E0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: currentStep === i ? '16px' : '12px',
+                        fontWeight: 'bold',
+                        transition: 'all 0.3s',
+                        boxShadow: currentStep === i ? '0 4px 12px rgba(255, 152, 0, 0.4)' : 'none'
+                    }}>
+                        {i + 1}
+                    </div>
+                    <span style={{
+                        fontSize: '10px',
+                        color: i <= currentStep ? '#FF9800' : '#999',
+                        fontWeight: i === currentStep ? 'bold' : 'normal',
+                        whiteSpace: 'nowrap'
+                    }}>{label}</span>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+// 数字选择器组件
+const NumberSelector = ({ label, value, min, max, onChange, color }) => {
+    return (
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            background: 'white',
+            padding: '12px 20px',
+            borderRadius: '50px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            minWidth: '200px',
+            justifyContent: 'space-between'
+        }}>
+            <span style={{
+                fontWeight: 'bold',
+                color: color,
+                fontSize: '16px',
+                minWidth: '50px'
+            }}>{label}</span>
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+            }}>
+                <button
+                    onClick={() => value > min && onChange(value - 1)}
+                    disabled={value <= min}
+                    style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        background: value > min ? color : '#E0E0E0',
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        cursor: value > min ? 'pointer' : 'not-allowed',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s',
+                        boxShadow: value > min ? '0 2px 8px rgba(0,0,0,0.15)' : 'none'
+                    }}
+                >−</button>
+                <span style={{
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    color: '#333',
+                    minWidth: '30px',
+                    textAlign: 'center'
+                }}>{value}</span>
+                <button
+                    onClick={() => value < max && onChange(value + 1)}
+                    disabled={value >= max}
+                    style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        background: value < max ? color : '#E0E0E0',
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                        cursor: value < max ? 'pointer' : 'not-allowed',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s',
+                        boxShadow: value < max ? '0 2px 8px rgba(0,0,0,0.15)' : 'none'
+                    }}
+                >+</button>
+            </div>
+        </div>
+    );
+};
+
+// 凑十法模块
+const MakeTenModule = ({ iconType }) => {
+    const [num1, setNum1] = useState(9);
+    const [num2, setNum2] = useState(4);
+    const [step, setStep] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
+
     const getIcon = () => {
-        switch(iconType) {
+        switch (iconType) {
             case 'duck': return '🦆';
             case 'star': return '⭐';
             case 'apple': default: return '🍎';
         }
     };
 
+    const gap = 10 - num1;
+    const remainder = num2 - gap;
+
+    const stepMessages = [
+        `我们来学习"凑十法"！`,
+        `左边有 ${num1} 个，还差 ${gap} 个凑成 10`,
+        `从右边借 ${gap} 个给左边`,
+        `把 ${gap} 个移过去，凑成 10！`,
+        `现在左边是 10，右边剩 ${remainder}`,
+        `10 + ${remainder} = ${num1 + num2} ✨`
+    ];
+
     const nextStep = () => {
-        const gap = 10 - num1;
-        
-        if (step === 0) {
-            setStep(1);
-            setNarration(`左边有 ${num1} 个，还需要 ${gap} 个就能凑成 10！`);
-        } else if (step === 1) {
-            setStep(2);
-            setNarration(`我们从右边借 ${gap} 个给左边。`);
-        } else if (step === 2) {
-            setStep(3);
-            setNarration(`把 ${gap} 个移过去，凑成 10！`);
-        } else if (step === 3) {
-            // 动画在 useEffect 中处理
-        } else if (step === 4) {
-            setStep(5);
-            setNarration(`10 加 ${num2 - gap} 等于 ${num1 + num2}！`);
-            playPopSound();
-        } else if (step === 5) {
+        if (step < 5) {
+            if (step === 2) {
+                // 触发动画
+                animateMove();
+            } else if (step === 5) {
+                playSuccessSound();
+            } else {
+                playPopSound();
+            }
+            setStep(step + 1);
+        } else {
             generateNew();
         }
     };
-    
-    // 动画副作用
-    useEffect(() => {
-        if (step === 3) {
-            const gap = 10 - num1;
-            const tl = gsap.timeline({
-                onComplete: () => {
-                    setStep(4);
-                    setNarration(`现在左边是 10，右边剩 ${num2 - gap}。10 加 ${num2 - gap} 等于多少？`);
-                    playPopSound();
-                }
-            });
 
-            // 获取左边容器和右边容器的 DOM
-            const leftGrid = document.querySelector('.maket-ten-left-grid');
-            const rightGrid = document.querySelector('.maket-ten-right-grid');
-            
-            if (!leftGrid || !rightGrid) return;
-            
-            for(let i=0; i<gap; i++) {
-                // 右边第 i 个 (要移动的)
-                const target = document.querySelector(`.right-item-${i}`);
-                if (!target) continue;
-                
-                // 目标：左边第 num1 + i 个位置
-                // 左边网格位置
-                const targetIndex = num1 + i;
-                
-                // 计算相对位移
-                // 这种计算依赖于 DOM 结构完全一致
-                const destPlaceholder = document.querySelector(`.left-slot-${targetIndex}`);
-                if (destPlaceholder) {
-                    const destRect = destPlaceholder.getBoundingClientRect();
-                    const startRect = target.getBoundingClientRect();
-                    
-                    const deltaX = destRect.left - startRect.left;
-                    const deltaY = destRect.top - startRect.top;
-                    
-                    tl.to(target, {
-                        x: deltaX,
-                        y: deltaY,
-                        scale: 1.1,
-                        duration: 0.8,
-                        ease: 'power2.inOut'
-                    }, i * 0.1);
-                }
+    const animateMove = () => {
+        setIsAnimating(true);
+        const tl = gsap.timeline({
+            onComplete: () => {
+                setIsAnimating(false);
+                setStep(4); // 动画完成后自动进入下一步
+                playPopSound();
             }
-        } else {
-            // Reset transforms when not in step 3
-             gsap.set('.mt-item', { clearProps: 'all' });
+        });
+
+        for (let i = 0; i < gap; i++) {
+            const target = document.querySelector(`.right-item-${i}`);
+            if (!target) continue;
+
+            const destPlaceholder = document.querySelector(`.left-slot-${num1 + i}`);
+            if (destPlaceholder) {
+                const destRect = destPlaceholder.getBoundingClientRect();
+                const startRect = target.getBoundingClientRect();
+
+                const deltaX = destRect.left - startRect.left;
+                const deltaY = destRect.top - startRect.top;
+
+                tl.to(target, {
+                    x: deltaX,
+                    y: deltaY,
+                    scale: 1.2,
+                    duration: 0.8,
+                    ease: 'power2.inOut'
+                }, i * 0.1);
+            }
         }
-    }, [step, num1, num2]);
+    };
+
+    useEffect(() => {
+        gsap.set('.mt-item', { clearProps: 'all' });
+    }, [num1, num2, step]);
 
     const generateNew = () => {
-        const n1 = 8 + Math.floor(Math.random() * 2); // 8 or 9
-        const newNum1 = 7 + Math.floor(Math.random() * 3); // 7, 8, 9
-        const newNum2 = 3 + Math.floor(Math.random() * 5); // 3 to 7
-        
+        const newNum1 = 7 + Math.floor(Math.random() * 3);
+        const newNum2 = 3 + Math.floor(Math.random() * 5);
+
         if (newNum1 + newNum2 <= 10) {
             generateNew();
             return;
         }
-        
+
         setNum1(newNum1);
         setNum2(newNum2);
         setStep(0);
-        setNarration(`我们来学习“凑十法”！先看左边有几个？`);
     };
 
-    const resetToDefault = () => {
+    const reset = () => {
         setNum1(9);
         setNum2(4);
         setStep(0);
-        setNarration('我们来学习“凑十法”！先看左边有几个？');
-        // Clear any leftover animation styles
         gsap.set('.mt-item', { clearProps: 'all' });
     };
 
-    const replay = () => {
-        setStep(0);
-        setNarration(`我们来学习“凑十法”！先看左边有几个？`);
-        gsap.set('.mt-item', { clearProps: 'all' });
-    };
-
-    const handleNum1Change = (e) => {
-        const val = Number(e.target.value);
-        setNum1(val);
-        // Ensure sum > 10 (num2 min)
-        const minNum2 = 11 - val;
-        // Ensure num2 <= num1 (num2 max is num1)
-        
-        let newNum2 = num2;
-        if (newNum2 < minNum2) {
-            newNum2 = minNum2;
-        }
-        if (newNum2 > val) {
-            newNum2 = val;
-        }
-        setNum2(newNum2);
-        
-        setStep(0);
-        setNarration(`我们来学习“凑十法”！先看左边有几个？`);
-    };
-
-    const handleNum2Change = (e) => {
-        const val = Number(e.target.value);
-        setNum2(val);
-        setStep(0);
-        setNarration(`我们来学习“凑十法”！先看左边有几个？`);
-    };
-    
-    // Dynamic min for num2 based on num1 to ensure sum > 10
     const minNum2 = 11 - num1;
-    // Dynamic max for num2 (cannot be larger than num1)
     const maxNum2 = num1;
 
     const renderGrid = (count, isLeft) => {
@@ -200,49 +294,55 @@ const MakeTenModule = ({ iconType }) => {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(5, 1fr)',
                 gridTemplateRows: 'repeat(2, 1fr)',
-                gap: '8px',
-                padding: '10px',
-                background: isLeft ? 'rgba(255, 235, 238, 0.5)' : 'rgba(227, 242, 253, 0.5)',
+                gap: 'clamp(4px, 1.5vw, 10px)',
+                padding: 'clamp(10px, 3vw, 16px)',
+                background: isLeft
+                    ? 'linear-gradient(135deg, rgba(255, 235, 238, 0.8) 0%, rgba(255, 205, 210, 0.6) 100%)'
+                    : 'linear-gradient(135deg, rgba(227, 242, 253, 0.8) 0%, rgba(187, 222, 251, 0.6) 100%)',
                 border: `3px solid ${isLeft ? '#FFCDD2' : '#BBDEFB'}`,
-                borderRadius: '16px',
-                backdropFilter: 'blur(5px)'
+                borderRadius: '20px',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                width: '100%',
+                maxWidth: '300px',
+                margin: '0 auto',
+                boxSizing: 'border-box'
             }}>
-                {Array.from({length: 10}).map((_, i) => {
-                    const hasItem = i < count;
-                    
-                    const visualCount = (step >= 4 && isLeft) ? 10 : 
-                                      (step >= 4 && !isLeft) ? (count - (10 - num1)) : 
-                                      count;
-                                      
+                {Array.from({ length: 10 }).map((_, i) => {
+                    const visualCount = (step >= 4 && isLeft) ? 10 :
+                        (step >= 4 && !isLeft) ? remainder :
+                            count;
+
                     const showItem = i < visualCount;
-                    
-                    // 幽灵位：左边缺少的位
-                    const isGap = isLeft && i >= num1;
                     const highlightGap = isLeft && step >= 1 && i >= num1;
 
                     return (
                         <div key={i} className={`left-slot-${i}`} style={{
-                            width: `${cellSize}px`, height: `${cellSize}px`,
-                            border: '2px dashed rgba(0,0,0,0.1)',
+                            aspectRatio: '1 / 1',
+                            width: '100%',
+                            border: '2px dashed rgba(0,0,0,0.15)',
                             borderRadius: '50%',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            background: highlightGap ? 'rgba(255, 235, 59, 0.3)' : 'transparent',
-                            transition: 'background 0.3s'
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: highlightGap ? 'rgba(255, 235, 59, 0.4)' : 'transparent',
+                            transition: 'all 0.3s',
+                            position: 'relative',
+                            boxSizing: 'border-box'
                         }}>
                             {showItem && (
-                                <div 
+                                <div
                                     className={`mt-item ${!isLeft ? `right-item-${i}` : ''}`}
                                     style={{
-                                        fontSize: `${cellSize * 0.66}px`,
-                                        // 右边 item 在 step 2 需要高亮 (将要移动的)
-                                        // 要移动的是前 (10-num1) 个
-                                        opacity: (!isLeft && step === 2 && i < (10-num1)) ? 0.6 : 1,
-                                        transform: (!isLeft && step === 2 && i < (10-num1)) ? 'scale(1.1)' : 'none',
+                                        fontSize: 'clamp(20px, 5vw, 36px)',
+                                        opacity: (!isLeft && step === 2 && i < gap) ? 0.6 : 1,
+                                        transform: (!isLeft && step === 2 && i < gap) ? 'scale(1.15)' : 'none',
                                         transition: 'all 0.3s',
-                                        zIndex: 10
+                                        zIndex: 10,
+                                        filter: (!isLeft && step === 2 && i < gap) ? 'drop-shadow(0 0 8px rgba(255, 152, 0, 0.6))' : 'none'
                                     }}
                                 >
-                                    {isLeft ? (step >= 4 && i >= num1 ? getIcon() : getIcon()) : getIcon()} 
+                                    {getIcon()}
                                 </div>
                             )}
                         </div>
@@ -252,359 +352,376 @@ const MakeTenModule = ({ iconType }) => {
         );
     };
 
-    const gap = 10 - num1;
-    const remainder = num2 - gap;
-
     return (
         <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%',
-            padding: '20px', 
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            padding: '0 0 100px 0',
             minHeight: '500px'
         }}>
-            {/* 顶部提示 */}
+            {/* 步骤进度 */}
+            <StepIndicator currentStep={step} totalSteps={6} />
+
+            {/* 提示消息 */}
             <div style={{
-                fontSize: '22px', fontWeight: 'bold', color: '#E65100', 
-                marginBottom: '30px', background: '#FFF', padding: '10px 30px', 
-                borderRadius: '50px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+                fontSize: 'clamp(16px, 4vw, 20px)',
+                fontWeight: 'bold',
+                color: '#E65100',
+                marginBottom: '24px',
+                background: 'rgba(255, 255, 255, 0.95)',
+                padding: '16px 28px',
+                borderRadius: '50px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                textAlign: 'center',
+                maxWidth: '90%',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 152, 0, 0.2)'
             }}>
-                {narration}
+                {stepMessages[step]}
             </div>
 
             {/* 主要演示区 */}
-            <div className="make-ten-main-stage" style={{display: 'flex', gap: '60px', alignItems: 'center', marginBottom: '40px'}}>
+            <div className="make-ten-main-stage" style={{
+                display: 'flex',
+                gap: 'clamp(20px, 5vw, 60px)',
+                alignItems: 'center',
+                marginBottom: '30px',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                width: '100%',
+                padding: '0 10px'
+            }}>
                 {/* 左边 */}
-                <div className="make-ten-grid-wrapper" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px'}}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flex: '1',
+                    minWidth: '280px',
+                    maxWidth: '320px'
+                }}>
                     {renderGrid(num1, true)}
-                    <div style={{fontSize: '32px', fontWeight: 'bold', color: '#D32F2F'}}>{step >= 4 ? 10 : num1}</div>
+                    <div style={{
+                        fontSize: 'clamp(28px, 6vw, 36px)',
+                        fontWeight: 'bold',
+                        color: '#D32F2F',
+                        background: 'white',
+                        padding: '8px 24px',
+                        borderRadius: '50px',
+                        boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)',
+                        minWidth: '80px',
+                        textAlign: 'center'
+                    }}>
+                        {step >= 4 ? 10 : num1}
+                    </div>
                 </div>
 
                 {/* 加号 */}
-                <div className="make-ten-plus" style={{fontSize: '48px', color: '#8D6E63', fontWeight: 'bold'}}>+</div>
+                <div style={{
+                    fontSize: 'clamp(36px, 8vw, 56px)',
+                    color: '#FF9800',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 8px rgba(255, 152, 0, 0.3)'
+                }}>+</div>
 
                 {/* 右边 */}
-                <div className="make-ten-grid-wrapper" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px'}}>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flex: '1',
+                    minWidth: '280px',
+                    maxWidth: '320px'
+                }}>
                     {renderGrid(num2, false)}
-                    <div style={{fontSize: '32px', fontWeight: 'bold', color: '#1976D2'}}>
+                    <div style={{
+                        fontSize: 'clamp(28px, 6vw, 36px)',
+                        fontWeight: 'bold',
+                        color: '#1976D2',
+                        background: 'white',
+                        padding: '8px 24px',
+                        borderRadius: '50px',
+                        boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
+                        minWidth: '80px',
+                        textAlign: 'center'
+                    }}>
                         {step >= 4 ? remainder : num2}
                     </div>
                 </div>
             </div>
 
-            {/* 算式分解演示 */}
-            <div className="make-ten-equation-row" style={{
-                minHeight: '220px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-                fontFamily: 'Comic Sans MS', fontSize: '48px', fontWeight: 'bold', color: '#333',
-                marginTop: '20px'
-            }}>
-                {step >= 0 && (
-                    <div style={{display: 'flex', alignItems: 'flex-start', position: 'relative'}}>
-                        {/* Num 1 */}
-                        <div style={{width: '80px', textAlign: 'center', zIndex: 2, position: 'relative'}}>{num1}</div>
-                        
-                        {/* + */}
-                        <div style={{width: '60px', textAlign: 'center'}}>+</div>
-                        
-                        {/* Num 2 (with split) */}
-                        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', width: '80px'}}>
-                            <div style={{
-                                zIndex: 2, 
-                                border: step >= 2 ? '2px solid #555' : '2px solid transparent',
-                                borderRadius: '50%',
-                                width: '50px',
-                                height: '50px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                background: step >= 2 ? '#FFF' : 'transparent',
-                                transition: 'all 0.3s'
-                            }}>{num2}</div>
-                            
-                            {step >= 2 && (
-                                <div style={{
-                                    position: 'absolute', 
-                                    top: '50px', 
-                                    left: '50%', 
-                                    transform: 'translateX(-50%)', 
-                                    display: 'flex', 
-                                    flexDirection: 'column', 
-                                    alignItems: 'center'
-                                }}>
-                                     {/* SVG Lines */}
-                                     <svg width="100" height="40" style={{overflow: 'visible'}}>
-                                         <line x1="50" y1="0" x2="25" y2="35" stroke="#555" strokeWidth="3" strokeLinecap="round" />
-                                         <line x1="50" y1="0" x2="75" y2="35" stroke="#555" strokeWidth="3" strokeLinecap="round" />
-                                     </svg>
-                                     
-                                     {/* Numbers */}
-                                     <div style={{display: 'flex', gap: '10px', marginTop: '-5px', fontSize: '32px'}}>
-                                         <div style={{
-                                             color: '#D32F2F', 
-                                             minWidth: '40px', 
-                                             height: '40px',
-                                             border: '2px solid #D32F2F',
-                                             borderRadius: '50%',
-                                             display: 'flex',
-                                             alignItems: 'center',
-                                             justifyContent: 'center',
-                                             background: '#FFF',
-                                             position: 'relative'
-                                         }}>
-                                            {gap}
-                                         </div>
-                                         <div style={{
-                                             color: '#1976D2', 
-                                             minWidth: '40px', 
-                                             height: '40px',
-                                             border: '2px solid #1976D2',
-                                             borderRadius: '50%',
-                                             display: 'flex',
-                                             alignItems: 'center',
-                                             justifyContent: 'center',
-                                             background: '#FFF'
-                                         }}>{remainder}</div>
-                                     </div>
-                                </div>
-                            )}
+            {/* 算式显示 */}
+            {step >= 2 && (
+                <div style={{
+                    fontSize: 'clamp(20px, 5vw, 32px)',
+                    fontWeight: 'bold',
+                    color: '#333',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    padding: '20px 30px',
+                    borderRadius: '20px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                    marginBottom: '20px',
+                    fontFamily: 'Comic Sans MS, cursive',
+                    textAlign: 'center',
+                    maxWidth: '90%'
+                }}>
+                    {step >= 2 && (
+                        <div style={{ marginBottom: '10px', color: '#9C27B0' }}>
+                            {num2} = <span style={{ color: '#D32F2F' }}>{gap}</span> + <span style={{ color: '#1976D2' }}>{remainder}</span>
+                        </div>
+                    )}
+                    {step >= 4 && (
+                        <div style={{ color: '#4CAF50' }}>
+                            10 + {remainder} = {step === 5 ? num1 + num2 : '?'}
+                        </div>
+                    )}
+                </div>
+            )}
 
-                            {/* Make Ten Connection Visualization */}
-                            {step >= 3 && (
-                                <svg style={{
-                                    position: 'absolute',
-                                    top: '0',
-                                    left: '0',
-                                    width: '100%',
-                                    height: '200px',
-                                    overflow: 'visible',
-                                    pointerEvents: 'none',
-                                    zIndex: 1
-                                }}>
-                                    <path 
-                                        d="M -100,55 Q -100,130 -42,130 T 15,125" 
-                                        fill="none" 
-                                        stroke="#D32F2F" 
-                                        strokeWidth="3" 
-                                        strokeDasharray="8,4"
-                                    />
-                                    <circle cx="-42" cy="130" r="18" fill="#D32F2F" />
-                                    <text x="-42" y="136" fill="#FFF" fontSize="18" fontWeight="bold" textAnchor="middle">10</text>
-                                </svg>
-                            )}
-                        </div>
-                        
-                        {/* = Result */}
-                        <div style={{width: '60px', textAlign: 'center'}}>=</div>
-                        <div style={{width: '80px', textAlign: 'center', color: step === 5 ? '#E65100' : '#333'}}>
-                            {step === 5 ? (num1+num2) : '?'}
-                        </div>
-                    </div>
-                )}
+            {/* 数字选择器 */}
+            <div style={{
+                display: 'flex',
+                gap: '16px',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                marginBottom: '20px',
+                padding: '0 10px',
+                width: '100%',
+                maxWidth: '600px'
+            }}>
+                <NumberSelector
+                    label="左边"
+                    value={num1}
+                    min={6}
+                    max={9}
+                    onChange={(val) => {
+                        setNum1(val);
+                        const newMinNum2 = 11 - val;
+                        if (num2 < newMinNum2) setNum2(newMinNum2);
+                        if (num2 > val) setNum2(val);
+                        setStep(0);
+                    }}
+                    color="#D32F2F"
+                />
+                <NumberSelector
+                    label="右边"
+                    value={num2}
+                    min={minNum2}
+                    max={maxNum2}
+                    onChange={(val) => {
+                        setNum2(val);
+                        setStep(0);
+                    }}
+                    color="#1976D2"
+                />
             </div>
 
-            {/* 控制按钮 */}
-            <div className="make-ten-controls" style={{marginTop: '0px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', width: '100%'}}>
-                
-                {/* 数字选择器 */}
-                <div className="make-ten-sliders" style={{
-                    display: 'flex', 
-                    gap: '30px', 
-                    background: '#FFF', 
-                    padding: '15px 25px', 
-                    borderRadius: '20px',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
-                    alignItems: 'center'
-                }}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                        <span style={{fontWeight: 'bold', color: '#D32F2F', fontSize: '18px'}}>左边:</span>
-                        <input 
-                            type="range" 
-                            min="6" 
-                            max="9" 
-                            value={num1} 
-                            onChange={handleNum1Change}
-                            style={{accentColor: '#D32F2F'}}
-                        />
-                        <span style={{fontWeight: 'bold', minWidth: '20px'}}>{num1}</span>
-                    </div>
-
-                    <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                        <span style={{fontWeight: 'bold', color: '#1976D2', fontSize: '18px'}}>右边:</span>
-                        <input 
-                            type="range" 
-                            min={minNum2} 
-                            max={maxNum2} 
-                            value={num2} 
-                            onChange={handleNum2Change}
-                            style={{accentColor: '#1976D2'}}
-                        />
-                        <span style={{fontWeight: 'bold', minWidth: '20px'}}>{num2}</span>
-                    </div>
-                </div>
-
-                <div className="make-ten-buttons" style={{display: 'flex', gap: '20px', flexWrap: 'nowrap', justifyContent: 'center'}}>
-                    <button className="btn-main" onClick={nextStep} disabled={step === 3}>
-                        {step === 0 ? '开始凑十' : 
-                        step === 1 ? '找朋友 (缺几个?)' :
-                        step === 2 ? '拆小数 (借给他)' :
-                        step === 3 ? '凑成十 (移过去)' :
-                        step === 4 ? '等于多少?' :
-                        '再来一题'}
-                    </button>
-                    <button className="btn-main" style={{background: '#4CAF50', boxShadow: '0 4px 0 #388E3C'}} onClick={replay}>
-                        🔄 重新演示
-                    </button>
-                    <button className="btn-main" style={{background: '#8D6E63', boxShadow: '0 4px 0 #5D4037'}} onClick={resetToDefault}>
-                        🔄 重置
-                    </button>
-                </div>
+            {/* 固定底部控制栏 */}
+            <div className="make-ten-controls" style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: 'rgba(255, 255, 255, 0.98)',
+                backdropFilter: 'blur(20px)',
+                padding: '16px',
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.1)',
+                borderTop: '1px solid rgba(0,0,0,0.05)',
+                zIndex: 1000,
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center',
+                flexWrap: 'wrap'
+            }}>
+                <button
+                    onClick={nextStep}
+                    disabled={isAnimating}
+                    style={{
+                        padding: '14px 32px',
+                        borderRadius: '50px',
+                        border: 'none',
+                        fontSize: 'clamp(16px, 4vw, 18px)',
+                        fontWeight: 'bold',
+                        cursor: isAnimating ? 'not-allowed' : 'pointer',
+                        color: 'white',
+                        background: isAnimating
+                            ? '#ccc'
+                            : 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+                        boxShadow: isAnimating ? 'none' : '0 4px 16px rgba(245, 124, 0, 0.4)',
+                        transition: 'all 0.2s',
+                        minWidth: '140px',
+                        flex: '1',
+                        maxWidth: '200px'
+                    }}
+                >
+                    {step < 5 ? '下一步 →' : '换一题 🎲'}
+                </button>
+                <button
+                    onClick={reset}
+                    style={{
+                        padding: '14px 28px',
+                        borderRadius: '50px',
+                        border: 'none',
+                        fontSize: 'clamp(16px, 4vw, 18px)',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        color: '#666',
+                        background: 'white',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        transition: 'all 0.2s',
+                        border: '2px solid #E0E0E0'
+                    }}
+                >
+                    🔄 重置
+                </button>
             </div>
         </div>
     );
 };
 
-// ==========================================
-// Main Page Component
-// ==========================================
+// 主页面组件
 function MathCarryAdd() {
     const [iconType, setIconType] = useState('apple');
 
     return (
         <div style={{
             minHeight: '100vh',
-            width: '100vw',
-            background: 'radial-gradient(circle at 50% 0%, #f0f4ff 0%, #e6eeff 100%)',
-            fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-            padding: '20px',
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
+            background: 'linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%)',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+            paddingBottom: '20px'
         }}>
-            {/* Navigation Bar */}
+            {/* Navigation */}
             <div style={{
                 width: '100%',
-                maxWidth: '1200px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '40px',
-                padding: '10px 0'
+                padding: '20px',
+                boxSizing: 'border-box'
             }}>
                 <Link to="/math" style={{
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    padding: '12px 24px',
+                    borderRadius: '50px',
                     textDecoration: 'none',
                     color: '#1a237e',
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    display: 'flex',
+                    fontWeight: 'bold',
+                    fontSize: '15px',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '10px 20px',
-                    background: 'rgba(255, 255, 255, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    border: '1px solid rgba(255,255,255,0.5)'
                 }}>
-                    <span>←</span> 返回数学乐园
+                    <span style={{ fontSize: '18px' }}>←</span> 返回数学乐园
                 </Link>
             </div>
 
+            {/* Header */}
             <div style={{
-                width: '100%',
-                padding: '40px',
-                boxSizing: 'border-box'
+                textAlign: 'center',
+                marginBottom: '30px',
+                padding: '0 20px'
             }}>
-                {/* Header */}
-                <div style={{textAlign: 'center', marginBottom: '40px'}}>
-                    <h2 style={{
-                        margin: '0 0 10px 0', 
-                        color: '#1a237e', 
-                        fontSize: '36px', 
-                        fontWeight: '800',
-                        letterSpacing: '-0.5px'
-                    }}>
-                        🔟 20以内进位加法 (凑十法)
-                    </h2>
-                    
-                    {/* Icon Selector */}
-                    <div style={{marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px'}}>
-                        <span style={{color: '#5c6bc0', fontWeight: '600'}}>选择图标:</span>
-                        {['apple', 'duck', 'star'].map(type => (
-                            <button key={type} 
-                                onClick={() => setIconType(type)}
-                                style={{
-                                    fontSize: '24px', 
-                                    padding: '8px 16px', 
-                                    border: iconType === type ? '2px solid #3f51b5' : '2px solid transparent',
-                                    borderRadius: '16px', 
-                                    background: iconType === type ? 'rgba(63, 81, 181, 0.1)' : 'rgba(255,255,255,0.5)',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                    boxShadow: iconType === type ? '0 4px 12px rgba(63, 81, 181, 0.2)' : 'none'
-                                }}
-                            >
-                                {type === 'apple' ? '🍎' : (type === 'duck' ? '🦆' : '⭐')}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="lab-content" style={{
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    overflow: 'visible'
+                <h1 style={{
+                    margin: '0 0 16px 0',
+                    color: '#1a237e',
+                    fontSize: 'clamp(24px, 6vw, 36px)',
+                    fontWeight: '800',
+                    letterSpacing: '-0.5px',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.1)'
                 }}>
-                    <MakeTenModule iconType={iconType} />
+                    🔟 20以内进位加法
+                </h1>
+                <p style={{
+                    color: '#5c6bc0',
+                    margin: '0 0 20px 0',
+                    fontSize: 'clamp(14px, 3.5vw, 18px)',
+                    fontWeight: '600'
+                }}>
+                    ✨ 凑十法演示 ✨
+                </p>
+
+                {/* Icon Selector */}
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap'
+                }}>
+                    <span style={{
+                        color: '#5c6bc0',
+                        fontWeight: '600',
+                        fontSize: 'clamp(14px, 3.5vw, 16px)'
+                    }}>选择图标:</span>
+                    {['apple', 'duck', 'star'].map(type => (
+                        <button
+                            key={type}
+                            onClick={() => setIconType(type)}
+                            style={{
+                                fontSize: 'clamp(24px, 6vw, 32px)',
+                                padding: '8px 16px',
+                                border: iconType === type ? '3px solid #3f51b5' : '3px solid transparent',
+                                borderRadius: '16px',
+                                background: iconType === type
+                                    ? 'rgba(63, 81, 181, 0.15)'
+                                    : 'rgba(255,255,255,0.7)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                boxShadow: iconType === type
+                                    ? '0 4px 16px rgba(63, 81, 181, 0.3)'
+                                    : '0 2px 8px rgba(0,0,0,0.05)',
+                                minWidth: '56px',
+                                minHeight: '56px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            {type === 'apple' ? '🍎' : (type === 'duck' ? '🦆' : '⭐')}
+                        </button>
+                    ))}
                 </div>
             </div>
 
+            {/* Content */}
+            <MakeTenModule iconType={iconType} />
+
             <style>{`
-                .btn-main {
-                    padding: 12px 30px;
-                    border-radius: 30px;
-                    border: none;
-                    font-size: 18px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    color: white;
-                    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-                    box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
-                    transition: all 0.2s ease;
+                body {
+                    margin: 0;
+                    padding: 0 !important;
+                    display: block !important;
                 }
-                .btn-main:hover {
+                #root {
+                    width: 100%;
+                }
+                
+                button:hover:not(:disabled) {
                     transform: translateY(-2px);
-                    box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
                 }
-                .btn-main:active {
-                    transform: translateY(1px);
-                    box-shadow: 0 2px 8px rgba(245, 124, 0, 0.3);
-                }
-                .btn-main:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                    transform: none;
-                    box-shadow: none;
-                    background: #ccc;
+                button:active:not(:disabled) {
+                    transform: translateY(0);
                 }
 
-                @media (max-width: 768px) {
+                @media (max-width: 640px) {
                     .make-ten-main-stage {
                         flex-direction: column !important;
                         gap: 20px !important;
                     }
-                    /* Scale removed, handled by cellSize state */
-                    .make-ten-equation-row {
-                        transform: scale(0.85);
-                        transform-origin: top center;
-                        margin-top: 10px;
-                        flex-wrap: wrap;
-                    }
-                    .make-ten-sliders {
-                        flex-direction: column !important;
-                        align-items: center !important;
-                        width: 90% !important;
-                        box-sizing: border-box;
+                }
+                
+                @media (min-width: 641px) {
+                    .make-ten-controls {
+                        position: relative !important;
+                        box-shadow: none !important;
+                        border-top: none !important;
+                        background: transparent !important;
+                        padding: 20px 0 !important;
                     }
                 }
             `}</style>

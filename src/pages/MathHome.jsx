@@ -144,6 +144,15 @@ function MathHome() {
       cta: "挑战一下"
     },
     {
+      to: "/math/subtract-break-ten",
+      icon: "➖",
+      color: "#9C27B0",
+      bg: "linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)",
+      title: "20以内退位减法",
+      desc: "通过'破十法'轻松掌握退位减法，让数学更有趣！",
+      cta: "开始学习"
+    },
+    {
       to: "/math/solid-shapes",
       icon: "🧊",
       color: "#2196F3",
@@ -213,10 +222,10 @@ function MathHome() {
       {/* Navigation */}
       <div style={styles.navBar}>
         <Link to="/" className="nav-btn" style={styles.navBtn}>
-          <span style={{fontSize: '18px'}}>🏠</span> 首页
+          <span style={{ fontSize: '18px' }}>🏠</span> 首页
         </Link>
         <Link to="/" className="nav-btn" style={styles.navBtn}>
-          <span style={{fontSize: '18px'}}>←</span> 返回
+          <span style={{ fontSize: '18px' }}>←</span> 返回
         </Link>
       </div>
 
@@ -231,27 +240,27 @@ function MathHome() {
       {/* Dashboard Grid */}
       <div style={styles.grid}>
         {cards.map((card, index) => (
-          <Link 
-            key={index} 
-            to={card.to} 
-            className="math-card" 
+          <Link
+            key={index}
+            to={card.to}
+            className="math-card"
             style={styles.card}
           >
-            <div 
-              className="icon-box" 
+            <div
+              className="icon-box"
               style={{
-                ...styles.iconBox, 
+                ...styles.iconBox,
                 color: card.color
               }}
             >
               {card.icon}
             </div>
-            
+
             <div style={styles.cardTitle}>{card.title}</div>
             <div style={styles.cardDesc}>{card.desc}</div>
-            
-            <div 
-              className="cta-btn" 
+
+            <div
+              className="cta-btn"
               style={styles.cta}
               onMouseEnter={(e) => e.currentTarget.style.background = card.bg}
               onMouseLeave={(e) => e.currentTarget.style.background = '#f7fafc'}

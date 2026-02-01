@@ -7,7 +7,7 @@ const playPopSound = () => {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
-        
+
         const ctx = new AudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -16,7 +16,7 @@ const playPopSound = () => {
         // 产生一个清脆的“波”声
         osc.frequency.setValueAtTime(600, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.15);
-        
+
         gain.gain.setValueAtTime(0.2, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
 
@@ -34,7 +34,7 @@ const playTakeSound = () => {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
-        
+
         const ctx = new AudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -43,7 +43,7 @@ const playTakeSound = () => {
         // 产生一个音调下降的“嗖”声
         osc.frequency.setValueAtTime(800, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
-        
+
         gain.gain.setValueAtTime(0.15, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
 
@@ -61,7 +61,7 @@ const playReturnSound = () => {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
-        
+
         const ctx = new AudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -70,7 +70,7 @@ const playReturnSound = () => {
         // 产生一个音调上升的“回弹”声
         osc.frequency.setValueAtTime(200, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.4);
-        
+
         gain.gain.setValueAtTime(0.15, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
 
@@ -134,16 +134,16 @@ const AdditionModule = ({ iconType }) => {
         if (!isMerged) return;
         setCounted(index + 1);
         playPopSound(); // 播放音效
-        
+
         // GSAP "Jump" animation for the clicked item
-        gsap.fromTo(`.item-${index}`, 
-            { y: 0, scale: 1 }, 
+        gsap.fromTo(`.item-${index}`,
+            { y: 0, scale: 1 },
             { y: -18, scale: 1.15, duration: 0.28, yoyo: true, repeat: 1, ease: "power1.out" }
         );
     };
 
     const getIcon = () => {
-        switch(iconType) {
+        switch (iconType) {
             case 'duck': return '🦆';
             case 'star': return '⭐';
             case 'apple': default: return '🍎';
@@ -197,7 +197,7 @@ const AdditionModule = ({ iconType }) => {
 
     const renderItems = ({ count, startIndex, clickable, showBadges, cellSize = CELL, iconSize = ICON_SIZE, badgeSize = 24, badgeFontSize = 14 }) => (
         <>
-            {Array.from({length: count}).map((_, i) => {
+            {Array.from({ length: count }).map((_, i) => {
                 const idx = startIndex + i;
                 return (
                     <div
@@ -217,7 +217,7 @@ const AdditionModule = ({ iconType }) => {
                     >
                         {getIcon()}
                         {showBadges && counted > idx && (
-                            <span className="count-badge" style={{width: `${badgeSize}px`, height: `${badgeSize}px`, fontSize: `${badgeFontSize}px`, top: '2px', right: '2px'}}>
+                            <span className="count-badge" style={{ width: `${badgeSize}px`, height: `${badgeSize}px`, fontSize: `${badgeFontSize}px`, top: '2px', right: '2px' }}>
                                 {idx + 1}
                             </span>
                         )}
@@ -230,56 +230,347 @@ const AdditionModule = ({ iconType }) => {
     const isOverLimit = num1 + num2 > 10;
 
     return (
-        <div className="lab-stage" style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', minWidth: 0}}>
-            <div style={{width: '100%', maxWidth: '1400px', padding: '8px 12px', boxSizing: 'border-box'}}>
-                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px'}}>
-                    <div className="addition-equation-row" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '18px', width: '100%', overflowX: 'auto', padding: '10px 0'}}>
-                        <div style={{...frameBaseStyle, borderColor: 'rgba(255, 112, 67, 0.6)', opacity: isMerged ? 0.35 : 1}}>
-                            {renderItems({ count: num1, startIndex: 0, clickable: false, showBadges: false })}
-                        </div>
-
-                        <div style={{fontSize: '56px', lineHeight: 1, color: '#4CAF50', flex: '0 0 auto', opacity: isMerged ? 0.35 : 1, textShadow: '0 2px 5px rgba(0,0,0,0.1)'}}>+</div>
-
-                        <div style={{...frameBaseStyle, borderColor: 'rgba(66, 165, 245, 0.6)', opacity: isMerged ? 0.35 : 1}}>
-                            {renderItems({ count: num2, startIndex: num1, clickable: false, showBadges: false })}
-                        </div>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            padding: '0 10px',
+            boxSizing: 'border-box'
+        }}>
+            {/* Main Equation Display */}
+            <div className="addition-main-stage" style={{
+                display: 'flex',
+                gap: 'clamp(16px, 4vw, 30px)',
+                alignItems: 'center',
+                marginBottom: '20px',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                width: '100%',
+                padding: '0 10px'
+            }}>
+                {/* Left Operand */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '10px',
+                    flex: '1',
+                    minWidth: 'min(200px, 40vw)',
+                    maxWidth: '220px'
+                }}>
+                    <div className="addition-grid-left" style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: 'clamp(6px, 2vw, 10px)',
+                        padding: 'clamp(10px, 3vw, 16px)',
+                        background: 'linear-gradient(135deg, rgba(255, 235, 238, 0.8) 0%, rgba(255, 205, 210, 0.6) 100%)',
+                        border: '3px solid #FFCDD2',
+                        borderRadius: '20px',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                        width: '100%',
+                        maxWidth: '180px',
+                        boxSizing: 'border-box',
+                        opacity: isMerged ? 0.35 : 1
+                    }}>
+                        {Array.from({ length: 9 }).map((_, i) => (
+                            <div key={i} style={{
+                                aspectRatio: '1 / 1',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 'clamp(22px, 5vw, 32px)'
+                            }}>
+                                {i < num1 && getIcon()}
+                            </div>
+                        ))}
                     </div>
+                    <div style={{
+                        fontSize: 'clamp(24px, 5vw, 32px)',
+                        fontWeight: 'bold',
+                        color: '#D32F2F',
+                        background: 'white',
+                        padding: '6px 20px',
+                        borderRadius: '50px',
+                        boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)'
+                    }}>{num1}</div>
+                </div>
 
-                    {isMerged && (
-                        <>
-                            <div className="addition-equation-row" style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '18px', width: '100%', overflowX: 'auto', padding: '6px 0'}}>
-                                <div style={{fontSize: '56px', lineHeight: 1, color: '#4CAF50', flex: '0 0 auto', textShadow: '0 2px 5px rgba(0,0,0,0.1)'}}>=</div>
-                                <div className="math-add-pile" style={{...pileFrameStyle, borderStyle: 'solid', borderColor: '#FFB74D', background: '#FFF8E1', boxShadow: '0 10px 25px rgba(255, 152, 0, 0.15)'}}>
-                                    {renderItems({ count: num1, startIndex: 0, clickable: true, showBadges: true, cellSize: PILE_CELL, iconSize: PILE_ICON_SIZE, badgeSize: 22, badgeFontSize: 13 })}
-                                    {renderItems({ count: num2, startIndex: num1, clickable: true, showBadges: true, cellSize: PILE_CELL, iconSize: PILE_ICON_SIZE, badgeSize: 22, badgeFontSize: 13 })}
-                                </div>
+                {/* Plus Sign */}
+                <div style={{
+                    fontSize: 'clamp(32px, 7vw, 48px)',
+                    color: '#4CAF50',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 8px rgba(76, 175, 80, 0.3)',
+                    opacity: isMerged ? 0.35 : 1
+                }}>+</div>
+
+                {/* Right Operand */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '10px',
+                    flex: '1',
+                    minWidth: 'min(200px, 40vw)',
+                    maxWidth: '220px'
+                }}>
+                    <div className="addition-grid-right" style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: 'clamp(6px, 2vw, 10px)',
+                        padding: 'clamp(10px, 3vw, 16px)',
+                        background: 'linear-gradient(135deg, rgba(227, 242, 253, 0.8) 0%, rgba(187, 222, 251, 0.6) 100%)',
+                        border: '3px solid #BBDEFB',
+                        borderRadius: '20px',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                        width: '100%',
+                        maxWidth: '180px',
+                        boxSizing: 'border-box',
+                        opacity: isMerged ? 0.35 : 1
+                    }}>
+                        {Array.from({ length: 9 }).map((_, i) => (
+                            <div key={i} style={{
+                                aspectRatio: '1 / 1',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 'clamp(22px, 5vw, 32px)'
+                            }}>
+                                {i < num2 && getIcon()}
                             </div>
-                            <div style={{fontSize: '18px', color: '#558B2F', opacity: 0.85, fontWeight: 700, textAlign: 'center', background: 'rgba(255,255,255,0.6)', padding: '5px 20px', borderRadius: '20px'}}>
-                                提示：点击结果框里的图标，按顺序数一数
-                            </div>
-                        </>
-                    )}
+                        ))}
+                    </div>
+                    <div style={{
+                        fontSize: 'clamp(24px, 5vw, 32px)',
+                        fontWeight: 'bold',
+                        color: '#1976D2',
+                        background: 'white',
+                        padding: '6px 20px',
+                        borderRadius: '50px',
+                        boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)'
+                    }}>{num2}</div>
                 </div>
             </div>
 
-            <div style={{fontSize: '48px', fontFamily: 'Comic Sans MS', color: '#2E7D32', margin: '20px 0', textShadow: '0 2px 4px rgba(0,0,0,0.1)'}}>
-                {num1} + {num2} = {isMerged ? <span style={{color: '#E65100', fontWeight: 'bold'}}>{num1 + num2}</span> : '?'}
-            </div>
-
-            {isOverLimit && (
-                <div style={{fontSize: '16px', fontWeight: 800, color: '#D84315', textAlign: 'center'}}>
-                    提示：两个数相加超过 10，请调整到 10 以内再合并
+            {/* Merged Result */}
+            {isMerged && (
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '16px',
+                    marginBottom: '20px',
+                    width: '100%'
+                }}>
+                    <div style={{
+                        fontSize: 'clamp(32px, 7vw, 48px)',
+                        color: '#4CAF50',
+                        fontWeight: 'bold'
+                    }}>=</div>
+                    <div className="math-add-pile" style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(5, 1fr)',
+                        gap: 'clamp(6px, 2vw, 10px)',
+                        padding: 'clamp(12px, 3vw, 20px)',
+                        background: '#FFF8E1',
+                        border: '3px solid #FFB74D',
+                        borderRadius: '20px',
+                        boxShadow: '0 10px 25px rgba(255, 152, 0, 0.15)',
+                        width: '100%',
+                        maxWidth: '360px',
+                        boxSizing: 'border-box'
+                    }}>
+                        {Array.from({ length: num1 + num2 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className={`item-${i} math-item`}
+                                onClick={() => handleItemClick(i)}
+                                style={{
+                                    aspectRatio: '1 / 1',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 'clamp(24px, 6vw, 36px)',
+                                    cursor: 'pointer',
+                                    position: 'relative'
+                                }}
+                            >
+                                {getIcon()}
+                                {counted > i && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        top: '-4px',
+                                        right: '-4px',
+                                        background: '#FFC107',
+                                        color: '#FFF',
+                                        borderRadius: '50%',
+                                        width: 'clamp(18px, 4vw, 24px)',
+                                        height: 'clamp(18px, 4vw, 24px)',
+                                        fontSize: 'clamp(10px, 2.5vw, 14px)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 'bold',
+                                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                    }}>{i + 1}</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    <div style={{
+                        fontSize: 'clamp(14px, 3.5vw, 18px)',
+                        color: '#558B2F',
+                        fontWeight: '700',
+                        textAlign: 'center',
+                        background: 'rgba(255,255,255,0.8)',
+                        padding: '8px 20px',
+                        borderRadius: '20px'
+                    }}>
+                        💡 点击图标按顺序数一数
+                    </div>
                 </div>
             )}
 
-            <div className="lab-controls" style={{flexWrap: 'nowrap'}}>
-                <button className="btn-main" onClick={handleMerge} disabled={isMerged || isOverLimit} style={isOverLimit ? {opacity: 0.5, cursor: 'not-allowed'} : undefined}>🤝 合并</button>
-                <button className="btn-main btn-secondary" onClick={generateRandom}>🎲 换一题</button>
+            {/* Equation Display */}
+            <div style={{
+                fontSize: 'clamp(28px, 7vw, 48px)',
+                fontFamily: 'Comic Sans MS, cursive',
+                color: '#2E7D32',
+                margin: '20px 0',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                textAlign: 'center'
+            }}>
+                {num1} + {num2} = {isMerged ? <span style={{ color: '#E65100', fontWeight: 'bold' }}>{num1 + num2}</span> : '?'}
             </div>
-            
-            <div className="slider-controls" style={{marginTop: '10px', display: 'flex', gap: '30px', flexWrap: 'wrap', justifyContent: 'center', background: 'rgba(255,255,255,0.5)', padding: '15px', borderRadius: '20px'}}>
-                <label>左边: <input type="range" min="0" max="9" value={num1} onChange={e => applyNumbers(e.target.value, num2)} style={{accentColor: '#FF7043'}} /></label>
-                <label>右边: <input type="range" min="0" max="9" value={num2} onChange={e => applyNumbers(num1, e.target.value)} style={{accentColor: '#42A5F5'}} /></label>
+
+            {isOverLimit && (
+                <div style={{
+                    fontSize: 'clamp(14px, 3.5vw, 16px)',
+                    fontWeight: 'bold',
+                    color: '#D84315',
+                    textAlign: 'center',
+                    padding: '10px 20px',
+                    background: 'rgba(255, 235, 238, 0.8)',
+                    borderRadius: '12px',
+                    marginBottom: '15px'
+                }}>
+                    ⚠️ 两个数相加超过 10，请调整到 10 以内再合并
+                </div>
+            )}
+
+            {/* Number Selectors */}
+            <div style={{
+                display: 'flex',
+                gap: '16px',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                marginBottom: '20px',
+                padding: '0 10px',
+                width: '100%',
+                maxWidth: '500px'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    background: 'white',
+                    padding: '12px 20px',
+                    borderRadius: '50px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    flex: '1',
+                    minWidth: '180px',
+                    justifyContent: 'space-between'
+                }}>
+                    <span style={{ fontWeight: 'bold', color: '#D32F2F', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>左边</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <button onClick={() => num1 > 0 && applyNumbers(num1 - 1, num2)} disabled={num1 <= 0}
+                            style={{
+                                width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                                background: num1 > 0 ? '#D32F2F' : '#E0E0E0', color: 'white',
+                                fontSize: '18px', fontWeight: 'bold', cursor: num1 > 0 ? 'pointer' : 'not-allowed'
+                            }}>−</button>
+                        <span style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 'bold', minWidth: '24px', textAlign: 'center' }}>{num1}</span>
+                        <button onClick={() => num1 < 9 && applyNumbers(num1 + 1, num2)} disabled={num1 >= 9}
+                            style={{
+                                width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                                background: num1 < 9 ? '#D32F2F' : '#E0E0E0', color: 'white',
+                                fontSize: '18px', fontWeight: 'bold', cursor: num1 < 9 ? 'pointer' : 'not-allowed'
+                            }}>+</button>
+                    </div>
+                </div>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    background: 'white',
+                    padding: '12px 20px',
+                    borderRadius: '50px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    flex: '1',
+                    minWidth: '180px',
+                    justifyContent: 'space-between'
+                }}>
+                    <span style={{ fontWeight: 'bold', color: '#1976D2', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>右边</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <button onClick={() => num2 > 0 && applyNumbers(num1, num2 - 1)} disabled={num2 <= 0}
+                            style={{
+                                width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                                background: num2 > 0 ? '#1976D2' : '#E0E0E0', color: 'white',
+                                fontSize: '18px', fontWeight: 'bold', cursor: num2 > 0 ? 'pointer' : 'not-allowed'
+                            }}>−</button>
+                        <span style={{ fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 'bold', minWidth: '24px', textAlign: 'center' }}>{num2}</span>
+                        <button onClick={() => num2 < 9 && applyNumbers(num1, num2 + 1)} disabled={num2 >= 9}
+                            style={{
+                                width: '32px', height: '32px', borderRadius: '50%', border: 'none',
+                                background: num2 < 9 ? '#1976D2' : '#E0E0E0', color: 'white',
+                                fontSize: '18px', fontWeight: 'bold', cursor: num2 < 9 ? 'pointer' : 'not-allowed'
+                            }}>+</button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="addition-controls" style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                padding: '0 10px'
+            }}>
+                <button
+                    onClick={handleMerge}
+                    disabled={isMerged || isOverLimit}
+                    style={{
+                        padding: '14px 28px',
+                        borderRadius: '50px',
+                        border: 'none',
+                        fontSize: 'clamp(16px, 4vw, 18px)',
+                        fontWeight: 'bold',
+                        cursor: (isMerged || isOverLimit) ? 'not-allowed' : 'pointer',
+                        color: 'white',
+                        background: (isMerged || isOverLimit) ? '#ccc' : 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+                        boxShadow: (isMerged || isOverLimit) ? 'none' : '0 4px 16px rgba(245, 124, 0, 0.4)',
+                        transition: 'all 0.2s'
+                    }}
+                >🤝 合并</button>
+                <button
+                    onClick={generateRandom}
+                    style={{
+                        padding: '14px 28px',
+                        borderRadius: '50px',
+                        border: '2px solid #E0E0E0',
+                        fontSize: 'clamp(16px, 4vw, 18px)',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        color: '#666',
+                        background: 'white',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        transition: 'all 0.2s'
+                    }}
+                >🎲 换一题</button>
             </div>
         </div>
     );
@@ -316,7 +607,7 @@ const SubtractionModule = ({ iconType }) => {
     const equationRemaining = Math.max(0, totalCount - equationRemoved);
 
     const getIcon = () => {
-        switch(iconType) {
+        switch (iconType) {
             case 'duck': return '🦆';
             case 'star': return '⭐';
             case 'apple': default: return '🍎';
@@ -324,7 +615,7 @@ const SubtractionModule = ({ iconType }) => {
     };
 
     const getItemName = () => {
-        switch(iconType) {
+        switch (iconType) {
             case 'duck': return '小鸭子';
             case 'star': return '小星星';
             case 'apple': default: return '红苹果';
@@ -332,7 +623,7 @@ const SubtractionModule = ({ iconType }) => {
     };
 
     const ghostBorder = (() => {
-        switch(iconType) {
+        switch (iconType) {
             case 'duck':
                 return 'rgba(33, 150, 243, 0.45)';
             case 'star':
@@ -344,7 +635,7 @@ const SubtractionModule = ({ iconType }) => {
     })();
 
     const ghostBg = (() => {
-        switch(iconType) {
+        switch (iconType) {
             case 'duck':
                 return 'rgba(33, 150, 243, 0.06)';
             case 'star':
@@ -470,7 +761,7 @@ const SubtractionModule = ({ iconType }) => {
         removeTimelineRef.current = tl;
 
         tl.to(selector, { duration: 0.12, scale: 1.08, ease: 'power1.out' })
-          .to(selector, { duration: 0.55, y: -90, opacity: 0, scale: 1.18, rotation: 18, ease: 'power2.in' }, '<');
+            .to(selector, { duration: 0.55, y: -90, opacity: 0, scale: 1.18, rotation: 18, ease: 'power2.in' }, '<');
     };
 
     const putBackOne = () => {
@@ -508,7 +799,7 @@ const SubtractionModule = ({ iconType }) => {
                 gsap.fromTo(
                     `#sub-item-${appearIndex}`,
                     { y: -60, opacity: 0, scale: 0.6 },
-                    { 
+                    {
                         y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)',
                         onComplete: () => {
                             scheduleClearIconTransforms();
@@ -552,136 +843,233 @@ const SubtractionModule = ({ iconType }) => {
     }, []);
 
     return (
-        <div className="lab-stage" style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', minWidth: 0}}>
-            <div style={{width: '100%', maxWidth: '1000px', margin: '0 auto', padding: '10px 20px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                <div style={{
-                    padding: '20px 30px', 
-                    fontSize: '20px', 
-                    fontWeight: 900, 
-                    color: '#2E7D32', 
-                    lineHeight: 1.6, 
-                    marginBottom: '20px', 
-                    height: '100px', 
-                    width: '100%', 
-                    maxWidth: '800px', 
-                    boxSizing: 'border-box', 
-                    overflow: 'hidden', 
-                    whiteSpace: 'normal', 
-                    overflowWrap: 'anywhere', 
-                    wordBreak: 'break-word', 
-                    display: '-webkit-box', 
-                    WebkitBoxOrient: 'vertical', 
-                    WebkitLineClamp: 3,
-                    textAlign: 'center'
-                }}>
-                    {narration}
-                </div>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            padding: '0 10px',
+            boxSizing: 'border-box'
+        }}>
+            {/* Narration */}
+            <div style={{
+                fontSize: 'clamp(16px, 4vw, 20px)',
+                fontWeight: 'bold',
+                color: '#E65100',
+                marginBottom: '24px',
+                background: 'rgba(255, 255, 255, 0.95)',
+                padding: '16px 28px',
+                borderRadius: '50px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                textAlign: 'center',
+                maxWidth: '90%',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 152, 0, 0.2)',
+                lineHeight: 1.5
+            }}>
+                {narration}
+            </div>
 
-                <div style={{display: 'flex', justifyContent: 'center', width: '100%', overflowX: 'auto', padding: '10px 0'}}>
-                    <div className="subtraction-tray-scale-wrapper">
-                        <div style={{width: `${TRAY_WIDTH}px`, height: `${TRAY_HEIGHT}px`, position: 'relative', flexShrink: 0}}>
-                            <div style={{
-                                width: `${TRAY_WIDTH}px`,
-                                height: `${TRAY_HEIGHT}px`,
-                                display: 'grid',
-                                gridTemplateColumns: `repeat(${TRAY_COLS}, ${SLOT_SIZE}px)`,
-                                gridTemplateRows: `repeat(${TRAY_ROWS}, ${SLOT_SIZE}px)`,
-                                gap: `${SLOT_GAP}px`,
-                                alignContent: 'start',
-                                justifyContent: 'start'
-                            }}>
-                                {Array.from({length: 10}).map((_, i) => {
-                                    const isActiveSlot = i < totalCount;
-                                    const hasIcon = isActiveSlot && i < visibleRemaining;
-                                    const showGhost = isActiveSlot && ghostIndex === i;
+            {/* Item Tray */}
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, 1fr)',
+                gap: 'clamp(8px, 2vw, 14px)',
+                padding: 'clamp(12px, 3vw, 20px)',
+                background: 'linear-gradient(135deg, rgba(255, 243, 224, 0.9) 0%, rgba(255, 224, 178, 0.8) 100%)',
+                border: '3px solid #FFB74D',
+                borderRadius: '20px',
+                boxShadow: '0 8px 24px rgba(255, 152, 0, 0.15)',
+                width: '100%',
+                maxWidth: '450px',
+                boxSizing: 'border-box',
+                marginBottom: '20px'
+            }}>
+                {Array.from({ length: 10 }).map((_, i) => {
+                    const isActiveSlot = i < totalCount;
+                    const hasIcon = isActiveSlot && i < visibleRemaining;
+                    const showGhost = isActiveSlot && ghostIndex === i;
 
-                                    return (
-                                        <div key={i} style={{width: SLOT_SIZE, height: SLOT_SIZE, position: 'relative'}}>
-                                            <div style={{
-                                                position: 'absolute',
-                                                inset: 0,
-                                                borderRadius: '20px',
-                                                border: isActiveSlot ? '3px solid rgba(0,0,0,0.06)' : '3px solid transparent',
-                                                background: isActiveSlot ? 'rgba(0,0,0,0.03)' : 'transparent'
-                                            }} />
+                    return (
+                        <div
+                            key={i}
+                            style={{
+                                aspectRatio: '1 / 1',
+                                position: 'relative',
+                                borderRadius: '16px',
+                                border: isActiveSlot ? '2px dashed rgba(0,0,0,0.1)' : '2px solid transparent',
+                                background: isActiveSlot ? 'rgba(255,255,255,0.5)' : 'transparent'
+                            }}
+                        >
+                            {hasIcon && (
+                                <div
+                                    id={`sub-item-${i}`}
+                                    className="sub-icon"
+                                    onClick={() => handleCountClick(i)}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: 'clamp(28px, 7vw, 48px)',
+                                        cursor: (isAnimating || isLocked) ? 'default' : 'pointer',
+                                        position: 'relative',
+                                        filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+                                        transition: 'transform 0.2s'
+                                    }}
+                                >
+                                    {getIcon()}
+                                    {counted > i && (
+                                        <span style={{
+                                            position: 'absolute',
+                                            top: '-4px',
+                                            right: '-4px',
+                                            background: '#FFC107',
+                                            color: '#FFF',
+                                            borderRadius: '50%',
+                                            width: 'clamp(18px, 4vw, 26px)',
+                                            height: 'clamp(18px, 4vw, 26px)',
+                                            fontSize: 'clamp(10px, 2.5vw, 14px)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontWeight: 'bold',
+                                            boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                        }}>{i + 1}</span>
+                                    )}
+                                </div>
+                            )}
 
-                                            {hasIcon && (
-                                                <div
-                                                    id={`sub-item-${i}`}
-                                                    className="sub-icon"
-                                                    onClick={() => handleCountClick(i)}
-                                                    style={{
-                                                        width: `${SLOT_SIZE}px`,
-                                                        height: `${SLOT_SIZE}px`,
-                                                        borderRadius: '20px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        fontSize: '56px',
-                                                        userSelect: 'none',
-                                                        background: 'transparent',
-                                                        filter: 'drop-shadow(0 8px 15px rgba(0,0,0,0.15))',
-                                                        cursor: (isAnimating || isLocked) ? 'default' : 'pointer',
-                                                        position: 'relative',
-                                                        transition: 'transform 0.2s'
-                                                    }}
-                                                >
-                                                    {getIcon()}
-                                                    {counted > i && (
-                                                        <span className="count-badge" style={{
-                                                            width: '28px', height: '28px', fontSize: '16px', top: '-5px', right: '-5px',
-                                                            background: '#FFC107', color: '#FFF', borderRadius: '50%',
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            fontWeight: 'bold', boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                                                        }}>
-                                                            {i + 1}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {showGhost && (
-                                                <div
-                                                    style={{
-                                                        position: 'absolute',
-                                                        inset: 0,
-                                                        borderRadius: '20px',
-                                                        border: `3px dashed ${ghostBorder}`,
-                                                        background: ghostBg
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                            {showGhost && (
+                                <div style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    borderRadius: '16px',
+                                    border: `3px dashed ${ghostBorder}`,
+                                    background: ghostBg
+                                }} />
+                            )}
                         </div>
-                    </div>
-                </div>
+                    );
+                })}
+            </div>
 
-                <div style={{marginTop: '25px', fontSize: '56px', fontFamily: 'Comic Sans MS', color: '#2E7D32', fontWeight: 900, textShadow: '0 2px 4px rgba(0,0,0,0.1)'}}>
-                    {totalCount} - {equationRemoved} = <span style={{color: '#FF5722'}}>{equationRemaining}</span>
-                </div>
+            {/* Equation Display */}
+            <div style={{
+                fontSize: 'clamp(28px, 7vw, 48px)',
+                fontFamily: 'Comic Sans MS, cursive',
+                color: '#2E7D32',
+                margin: '10px 0',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                fontWeight: 'bold'
+            }}>
+                {totalCount} - {equationRemoved} = <span style={{ color: '#FF5722' }}>{equationRemaining}</span>
+            </div>
 
-                <div style={{marginTop: '10px', fontSize: '20px', fontWeight: 900, color: '#558B2F'}}>
-                    {equationRemaining === 0 ? '全部拿走了' : (equationRemoved === 0 ? '点击“拿走一个”开始' : `剩几个？还剩 ${equationRemaining} 个`)}
-                </div>
+            {/* Status Text */}
+            <div style={{
+                fontSize: 'clamp(14px, 3.5vw, 18px)',
+                fontWeight: 'bold',
+                color: '#558B2F',
+                marginBottom: '20px',
+                textAlign: 'center'
+            }}>
+                {equationRemaining === 0 ? '🎉 全部拿走了！' : (equationRemoved === 0 ? '👆 点击"拿走一个"开始' : `还剩 ${equationRemaining} 个`)}
+            </div>
 
-                <div className="lab-controls" style={{justifyContent: 'flex-start', paddingLeft: 0, paddingRight: 0, marginTop: '20px', flexWrap: 'nowrap'}}>
-                    <button className="btn-main" onClick={takeOne} disabled={isAnimating || isLocked || visibleRemaining <= 0} style={{background: '#FF5722', boxShadow: '0 4px 10px rgba(255, 87, 34, 0.4)'}}>
-                        🍴 拿走一个
-                    </button>
-                    <button className="btn-main" onClick={putBackOne} disabled={isAnimating || isLocked || removedCount <= 0 || !showReturnAction} style={{background: '#4CAF50', boxShadow: '0 4px 10px rgba(76, 175, 80, 0.4)', opacity: (isAnimating || isLocked || removedCount <= 0 || !showReturnAction) ? 0.5 : 1}}>
-                        ↩️ 拿回来一个
-                    </button>
-                    <button className="btn-main btn-secondary" onClick={resetToTen}>
-                        🔄 重置
-                    </button>
+            {/* Number Selector */}
+            <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                background: 'white',
+                padding: '12px 20px',
+                borderRadius: '50px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                marginBottom: '20px'
+            }}>
+                <span style={{ fontWeight: 'bold', color: '#4CAF50', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>总数</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <button onClick={() => totalCount > 1 && applyTotal(totalCount - 1)} disabled={totalCount <= 1}
+                        style={{
+                            width: '36px', height: '36px', borderRadius: '50%', border: 'none',
+                            background: totalCount > 1 ? '#4CAF50' : '#E0E0E0', color: 'white',
+                            fontSize: '20px', fontWeight: 'bold', cursor: totalCount > 1 ? 'pointer' : 'not-allowed'
+                        }}>−</button>
+                    <span style={{ fontSize: 'clamp(20px, 5vw, 26px)', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>{totalCount}</span>
+                    <button onClick={() => totalCount < 10 && applyTotal(totalCount + 1)} disabled={totalCount >= 10}
+                        style={{
+                            width: '36px', height: '36px', borderRadius: '50%', border: 'none',
+                            background: totalCount < 10 ? '#4CAF50' : '#E0E0E0', color: 'white',
+                            fontSize: '20px', fontWeight: 'bold', cursor: totalCount < 10 ? 'pointer' : 'not-allowed'
+                        }}>+</button>
                 </div>
+            </div>
 
-                <div className="slider-controls" style={{marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center', background: 'rgba(255,255,255,0.5)', padding: '15px', borderRadius: '20px'}}>
-                    <label>总数: {totalCount} <input type="range" min="1" max="10" value={totalCount} onChange={e => applyTotal(e.target.value)} style={{accentColor: '#4CAF50'}} /></label>
-                </div>
+            {/* Action Buttons */}
+            <div style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                padding: '0 10px'
+            }}>
+                <button
+                    onClick={takeOne}
+                    disabled={isAnimating || isLocked || visibleRemaining <= 0}
+                    style={{
+                        padding: '14px 24px',
+                        borderRadius: '50px',
+                        border: 'none',
+                        fontSize: 'clamp(14px, 3.5vw, 16px)',
+                        fontWeight: 'bold',
+                        cursor: (isAnimating || isLocked || visibleRemaining <= 0) ? 'not-allowed' : 'pointer',
+                        color: 'white',
+                        background: (isAnimating || isLocked || visibleRemaining <= 0)
+                            ? '#ccc'
+                            : 'linear-gradient(135deg, #FF5722 0%, #E64A19 100%)',
+                        boxShadow: (isAnimating || isLocked || visibleRemaining <= 0)
+                            ? 'none'
+                            : '0 4px 16px rgba(255, 87, 34, 0.4)',
+                        transition: 'all 0.2s'
+                    }}
+                >🍴 拿走一个</button>
+                <button
+                    onClick={putBackOne}
+                    disabled={isAnimating || isLocked || removedCount <= 0 || !showReturnAction}
+                    style={{
+                        padding: '14px 24px',
+                        borderRadius: '50px',
+                        border: 'none',
+                        fontSize: 'clamp(14px, 3.5vw, 16px)',
+                        fontWeight: 'bold',
+                        cursor: (isAnimating || isLocked || removedCount <= 0 || !showReturnAction) ? 'not-allowed' : 'pointer',
+                        color: 'white',
+                        background: (isAnimating || isLocked || removedCount <= 0 || !showReturnAction)
+                            ? '#ccc'
+                            : 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
+                        boxShadow: (isAnimating || isLocked || removedCount <= 0 || !showReturnAction)
+                            ? 'none'
+                            : '0 4px 16px rgba(76, 175, 80, 0.4)',
+                        transition: 'all 0.2s'
+                    }}
+                >↩️ 拿回来</button>
+                <button
+                    onClick={resetToTen}
+                    style={{
+                        padding: '14px 24px',
+                        borderRadius: '50px',
+                        border: '2px solid #E0E0E0',
+                        fontSize: 'clamp(14px, 3.5vw, 16px)',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        color: '#666',
+                        background: 'white',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        transition: 'all 0.2s'
+                    }}
+                >🔄 重置</button>
             </div>
         </div>
     );
@@ -700,7 +1088,7 @@ const NumberBondsModule = () => {
 
     const CIRCLE_RADIUS = 75;
     const BALL_RADIUS = 14;
-    
+
     // 定义圆圈位置 (相对于容器中心)
     const POSITIONS = {
         WHOLE: { x: 0, y: -160, color: '#FFD54F', label: '整体' }, // 金色
@@ -734,12 +1122,12 @@ const NumberBondsModule = () => {
     const getRandomPosInCircle = (containerType) => {
         const pos = POSITIONS[containerType];
         // 确保小球避开圆心数字区域 (中心 35px 范围)
-        const minRadius = 38; 
+        const minRadius = 38;
         const maxRadius = CIRCLE_RADIUS - BALL_RADIUS - 4;
-        
+
         const angle = Math.random() * Math.PI * 2;
         const dist = minRadius + Math.random() * (maxRadius - minRadius);
-        
+
         return {
             x: pos.x + Math.cos(angle) * dist,
             y: pos.y + Math.sin(angle) * dist
@@ -754,7 +1142,7 @@ const NumberBondsModule = () => {
         const mouseY = clientY - rect.top - rect.height / 2;
 
         let targetContainer = 'BOTTOM';
-        
+
         // 碰撞检测
         for (const [key, pos] of Object.entries(POSITIONS)) {
             // 禁止拖动到大圈圈 (WHOLE)
@@ -774,7 +1162,7 @@ const NumberBondsModule = () => {
         setBalls(prev => {
             const newBalls = prev.map(ball => {
                 if (ball.id !== id) return ball;
-                
+
                 let finalPos;
                 if (targetContainer === 'BOTTOM') {
                     finalPos = { x: -220 + ball.id * 48, y: 200 };
@@ -793,13 +1181,13 @@ const NumberBondsModule = () => {
             // 更新叙述文字
             const p1 = newBalls.filter(b => b.container === 'PART1').length;
             const p2 = newBalls.filter(b => b.container === 'PART2').length;
-            
+
             if (p1 > 0 || p2 > 0) {
                 setNarration(`${p1} 和 ${p2} 合起来是 ${p1 + p2}。`);
             } else {
                 setNarration('拖动下方的小球到圆圈里试试看！');
             }
-            
+
             return newBalls;
         });
     };
@@ -811,10 +1199,10 @@ const NumberBondsModule = () => {
         for (let i = 0; i <= exhaustiveTarget; i++) {
             combos.push([i, exhaustiveTarget - i]);
         }
-        
+
         const currentIndex = exhaustiveIndex % combos.length;
         const [p1, p2] = combos[currentIndex];
-        
+
         // 更新历史记录，避免重复添加
         setHistory(prev => {
             const exists = prev.some(item => item[0] === p1 && item[1] === p2);
@@ -824,29 +1212,29 @@ const NumberBondsModule = () => {
             }
             return prev;
         });
-        
+
         setBalls(prev => {
             // 先将所有球重置到底部位置，但只针对需要参与穷举的球
             const pool = prev.map(ball => ({ ...ball, container: 'BOTTOM', targetX: -220 + ball.id * 48, targetY: 200 }));
-            
+
             let used = 0;
             // 分配 p1 个到 PART1
-            for(let i=0; i<p1; i++) {
+            for (let i = 0; i < p1; i++) {
                 const pos = getRandomPosInCircle('PART1');
                 pool[used] = { ...pool[used], container: 'PART1', targetX: pos.x, targetY: pos.y };
                 used++;
             }
             // 分配 p2 个到 PART2
-            for(let i=0; i<p2; i++) {
+            for (let i = 0; i < p2; i++) {
                 const pos = getRandomPosInCircle('PART2');
                 pool[used] = { ...pool[used], container: 'PART2', targetX: pos.x, targetY: pos.y };
                 used++;
             }
-            
+
             setNarration(`${exhaustiveTarget} 可以分成 ${p1} 和 ${p2}。`);
             return pool;
         });
-        
+
         setExhaustiveIndex(prev => prev + 1);
     };
 
@@ -868,7 +1256,7 @@ const NumberBondsModule = () => {
         <div className="lab-stage bonds-wrapper" style={{
             display: 'flex',
             flexDirection: 'row', // Default row, overridden by CSS
-            alignItems: 'flex-start', 
+            alignItems: 'flex-start',
             justifyContent: 'center',
             background: 'transparent',
             borderRadius: '30px',
@@ -911,101 +1299,142 @@ const NumberBondsModule = () => {
                         height: '400px',
                         marginTop: '20px'
                     }}>
-                    {/* 连接线 (SVG) */}
-                    <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
-                        <line x1="300" y1="40" x2="140" y2="280" stroke="#8D6E63" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
-                        <line x1="300" y1="40" x2="460" y2="280" stroke="#8D6E63" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
-                    </svg>
-    
-                    {/* 三个大圆圈 - 背景层 */}
-                    {Object.entries(POSITIONS).map(([key, pos]) => (
-                        <div key={key} style={{
-                            position: 'absolute',
-                            left: `calc(50% + ${pos.x}px)`,
-                            top: `calc(50% + ${pos.y}px)`,
-                            width: `${CIRCLE_RADIUS * 2}px`,
-                            height: `${CIRCLE_RADIUS * 2}px`,
-                            transform: 'translate(-50%, -50%)',
-                            borderRadius: '50%',
-                            background: pos.color,
-                            border: '6px solid rgba(255,255,255,0.8)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.1), inset 0 5px 15px rgba(0,0,0,0.05)',
-                            zIndex: 1 // 圆圈背景在最底层
-                        }}>
-                        </div>
-                    ))}
-    
-                    {/* 小球 - 中间层 (zIndex: 10) */}
-                    {balls.map((ball) => (
-                        <Ball 
-                            key={ball.id} 
-                            ball={ball} 
-                            onDragEnd={(x, y) => handleDragEnd(ball.id, x, y)} 
-                        />
-                    ))}
-    
-                    {/* 数字 - 最顶层 */}
-                    {Object.entries(POSITIONS).map(([key, pos]) => (
-                        <div key={`num-${key}`} style={{
-                            position: 'absolute',
-                            left: `calc(50% + ${pos.x}px)`,
-                            top: `calc(50% + ${pos.y}px)`,
-                            width: `${CIRCLE_RADIUS * 2}px`,
-                            height: `${CIRCLE_RADIUS * 2}px`,
-                            transform: 'translate(-50%, -50%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            pointerEvents: 'none', // 确保不阻挡小球拖拽
-                            zIndex: 20 // 数字在最上层
-                        }}>
-                            <div style={{
-                                fontSize: '48px',
-                                fontWeight: 'bold',
-                                color: '#333',
-                                fontFamily: 'Comic Sans MS',
-                                textShadow: '0 2px 4px rgba(255,255,255,0.8)',
+                        {/* 连接线 (SVG) */}
+                        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+                            <line x1="300" y1="40" x2="140" y2="280" stroke="#8D6E63" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
+                            <line x1="300" y1="40" x2="460" y2="280" stroke="#8D6E63" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
+                        </svg>
+
+                        {/* 三个大圆圈 - 背景层 */}
+                        {Object.entries(POSITIONS).map(([key, pos]) => (
+                            <div key={key} style={{
+                                position: 'absolute',
+                                left: `calc(50% + ${pos.x}px)`,
+                                top: `calc(50% + ${pos.y}px)`,
+                                width: `${CIRCLE_RADIUS * 2}px`,
+                                height: `${CIRCLE_RADIUS * 2}px`,
+                                transform: 'translate(-50%, -50%)',
+                                borderRadius: '50%',
+                                background: pos.color,
+                                border: '6px solid rgba(255,255,255,0.8)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 10px 25px rgba(0,0,0,0.1), inset 0 5px 15px rgba(0,0,0,0.05)',
+                                zIndex: 1 // 圆圈背景在最底层
                             }}>
-                                {counts[key]}
                             </div>
-                        </div>
-                    ))}
+                        ))}
+
+                        {/* 小球 - 中间层 (zIndex: 10) */}
+                        {balls.map((ball) => (
+                            <Ball
+                                key={ball.id}
+                                ball={ball}
+                                onDragEnd={(x, y) => handleDragEnd(ball.id, x, y)}
+                            />
+                        ))}
+
+                        {/* 数字 - 最顶层 */}
+                        {Object.entries(POSITIONS).map(([key, pos]) => (
+                            <div key={`num-${key}`} style={{
+                                position: 'absolute',
+                                left: `calc(50% + ${pos.x}px)`,
+                                top: `calc(50% + ${pos.y}px)`,
+                                width: `${CIRCLE_RADIUS * 2}px`,
+                                height: `${CIRCLE_RADIUS * 2}px`,
+                                transform: 'translate(-50%, -50%)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                pointerEvents: 'none', // 确保不阻挡小球拖拽
+                                zIndex: 20 // 数字在最上层
+                            }}>
+                                <div style={{
+                                    fontSize: '48px',
+                                    fontWeight: 'bold',
+                                    color: '#333',
+                                    fontFamily: 'Comic Sans MS',
+                                    textShadow: '0 2px 4px rgba(255,255,255,0.8)',
+                                }}>
+                                    {counts[key]}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
                 {/* 控制按钮 */}
-                <div className="bonds-controls" style={{
+                <div style={{
                     display: 'flex',
-                    gap: '20px',
-                    marginTop: '50px',
-                    flexWrap: 'nowrap',
+                    gap: 'clamp(10px, 2vw, 20px)',
+                    marginTop: '30px',
+                    flexWrap: 'wrap',
                     justifyContent: 'center',
-                    width: '100%'
+                    width: '100%',
+                    padding: '0 10px'
                 }}>
-                <button className="btn-main" onClick={nextExhaustive} style={{ background: '#7E57C2', boxShadow: '0 4px 10px rgba(126, 87, 194, 0.4)' }}>
-                    🔢 展示 {exhaustiveTarget} 的所有组成
-                </button>
-                <button className="btn-main btn-secondary" onClick={resetModule}>
-                    🔄 重置
-                </button>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '10px', background: 'white', padding: '5px 20px', borderRadius: '30px', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-                    <span style={{ fontWeight: 'bold', color: '#1565C0', fontSize: '16px' }}>目标:</span>
-                    <input 
-                        type="range" min="2" max="10" 
-                        value={exhaustiveTarget} 
-                        onChange={(e) => {
-                            setExhaustiveTarget(Number(e.target.value));
-                            setExhaustiveIndex(0);
-                            setHistory([]); // 目标改变时清空历史
-                        }} 
-                        style={{accentColor: '#1565C0'}}
-                    />
-                    <span style={{ fontWeight: 'bold', color: '#1565C0', width: '25px', fontSize: '18px' }}>{exhaustiveTarget}</span>
+                    <button
+                        onClick={nextExhaustive}
+                        style={{
+                            padding: 'clamp(10px, 2.5vw, 14px) clamp(16px, 4vw, 28px)',
+                            borderRadius: '50px',
+                            border: 'none',
+                            fontSize: 'clamp(14px, 3.5vw, 16px)',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            color: 'white',
+                            background: 'linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%)',
+                            boxShadow: '0 4px 16px rgba(126, 87, 194, 0.4)',
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >🔢 展示 {exhaustiveTarget} 的组成</button>
+                    <button
+                        onClick={resetModule}
+                        style={{
+                            padding: 'clamp(10px, 2.5vw, 14px) clamp(16px, 4vw, 28px)',
+                            borderRadius: '50px',
+                            border: '2px solid #E0E0E0',
+                            fontSize: 'clamp(14px, 3.5vw, 16px)',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            color: '#666',
+                            background: 'white',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            transition: 'all 0.2s'
+                        }}
+                    >🔄 重置</button>
                 </div>
-            </div>
+                
+                {/* Number Selector */}
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    background: 'white',
+                    padding: '12px 20px',
+                    borderRadius: '50px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                    marginTop: '16px'
+                }}>
+                    <span style={{ fontWeight: 'bold', color: '#7E57C2', fontSize: 'clamp(14px, 3.5vw, 16px)' }}>目标数</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <button onClick={() => exhaustiveTarget > 2 && (setExhaustiveTarget(exhaustiveTarget - 1), setExhaustiveIndex(0), setHistory([]))} disabled={exhaustiveTarget <= 2}
+                            style={{
+                                width: '36px', height: '36px', borderRadius: '50%', border: 'none',
+                                background: exhaustiveTarget > 2 ? '#7E57C2' : '#E0E0E0', color: 'white',
+                                fontSize: '20px', fontWeight: 'bold', cursor: exhaustiveTarget > 2 ? 'pointer' : 'not-allowed'
+                            }}>−</button>
+                        <span style={{ fontSize: 'clamp(20px, 5vw, 26px)', fontWeight: 'bold', minWidth: '30px', textAlign: 'center' }}>{exhaustiveTarget}</span>
+                        <button onClick={() => exhaustiveTarget < 10 && (setExhaustiveTarget(exhaustiveTarget + 1), setExhaustiveIndex(0), setHistory([]))} disabled={exhaustiveTarget >= 10}
+                            style={{
+                                width: '36px', height: '36px', borderRadius: '50%', border: 'none',
+                                background: exhaustiveTarget < 10 ? '#7E57C2' : '#E0E0E0', color: 'white',
+                                fontSize: '20px', fontWeight: 'bold', cursor: exhaustiveTarget < 10 ? 'pointer' : 'not-allowed'
+                            }}>+</button>
+                    </div>
+                </div>
             </div>
 
             {/* 右侧历史记录列表 */}
@@ -1023,18 +1452,18 @@ const NumberBondsModule = () => {
                 marginTop: '0',
                 backdropFilter: 'blur(10px)'
             }}>
-                <div style={{ 
-                    fontWeight: 'bold', 
-                    color: '#1565C0', 
-                    textAlign: 'center', 
+                <div style={{
+                    fontWeight: 'bold',
+                    color: '#1565C0',
+                    textAlign: 'center',
                     marginBottom: '10px',
                     fontSize: '20px',
                     borderBottom: '2px solid rgba(21, 101, 192, 0.1)',
                     paddingBottom: '15px'
                 }}>
-                    {exhaustiveTarget} 的组成 <span style={{fontSize: '14px', opacity: 0.8, background: '#E3F2FD', padding: '2px 10px', borderRadius: '10px', marginLeft: '10px'}}>({history.length}/{exhaustiveTarget + 1})</span>
+                    {exhaustiveTarget} 的组成 <span style={{ fontSize: '14px', opacity: 0.8, background: '#E3F2FD', padding: '2px 10px', borderRadius: '10px', marginLeft: '10px' }}>({history.length}/{exhaustiveTarget + 1})</span>
                 </div>
-                
+
                 <div style={{
                     display: 'grid',
                     gridTemplateRows: 'repeat(6, auto)',
@@ -1044,7 +1473,7 @@ const NumberBondsModule = () => {
                 }}>
                     {history.length === 0 && (
                         <div style={{ fontSize: '16px', color: '#999', textAlign: 'center', marginTop: '40px', lineHeight: '1.6' }}>
-                            点击“展示所有组成”<br/>查看算式列表
+                            点击“展示所有组成”<br />查看算式列表
                         </div>
                     )}
                     {history.map((combo, idx) => (
@@ -1142,53 +1571,102 @@ const Ball = ({ ball, onDragEnd }) => {
 function MathAddSubtract() {
     const [activeTab, setActiveTab] = useState('add');
     const [iconType, setIconType] = useState('apple');
-    const fullBleed = { width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)' };
 
     return (
         <div style={{
             minHeight: '100vh',
-            backgroundColor: '#F1F8E9',
+            background: 'linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 50%, #DCEDC8 100%)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-            paddingBottom: '40px'
+            paddingBottom: '20px'
         }}>
-            <div className="nav-bar" style={{ width: '100%', margin: '0', padding: '40px 20px 0', display: 'flex', gap: '15px', boxSizing: 'border-box' }}>
-                <Link to="/math" className="nav-btn">
-                    <span style={{fontSize: '18px'}}>←</span> 返回数学乐园
+            {/* Navigation */}
+            <div style={{
+                width: '100%',
+                padding: '20px',
+                boxSizing: 'border-box'
+            }}>
+                <Link to="/math" style={{
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    padding: '12px 24px',
+                    borderRadius: '50px',
+                    textDecoration: 'none',
+                    color: '#2E7D32',
+                    fontWeight: 'bold',
+                    fontSize: '15px',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'all 0.2s ease',
+                    border: '1px solid rgba(255,255,255,0.5)'
+                }}>
+                    <span style={{ fontSize: '18px' }}>←</span> 返回数学乐园
                 </Link>
             </div>
 
-            <div style={{ width: '100%', padding: '0 20px', boxSizing: 'border-box' }}>
-                {/* Header */}
-                <div style={{textAlign: 'center', marginBottom: '30px'}}>
-                    <h1 style={{margin: '0 0 10px 0', color: '#2E7D32', fontSize: '36px', fontWeight: '800', textShadow: '0 2px 4px rgba(0,0,0,0.1)'}}>
-                        ➕ 10以内的加减法 ➖
-                    </h1>
-                    
-                    {/* Icon Selector */}
-                    <div style={{marginTop: '20px', display: 'inline-flex', background: 'rgba(255,255,255,0.6)', padding: '5px', borderRadius: '50px', backdropFilter: 'blur(5px)'}}>
-                        {['apple', 'duck', 'star'].map(type => (
-                            <button key={type} 
-                                onClick={() => setIconType(type)}
-                                style={{
-                                    fontSize: '24px', 
-                                    padding: '5px 15px', 
-                                    margin: '0', 
-                                    border: 'none',
-                                    borderRadius: '40px', 
-                                    background: iconType === type ? '#FFF' : 'transparent',
-                                    boxShadow: iconType === type ? '0 4px 10px rgba(0,0,0,0.1)' : 'none',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    opacity: iconType === type ? 1 : 0.6,
-                                    transform: iconType === type ? 'scale(1.1)' : 'scale(1)'
-                                }}
-                            >
-                                {type === 'apple' ? '🍎' : (type === 'duck' ? '🦆' : '⭐')}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+            {/* Header */}
+            <div style={{
+                textAlign: 'center',
+                marginBottom: '30px',
+                padding: '0 20px'
+            }}>
+                <h1 style={{
+                    margin: '0 0 16px 0',
+                    color: '#2E7D32',
+                    fontSize: 'clamp(24px, 6vw, 36px)',
+                    fontWeight: '800',
+                    letterSpacing: '-0.5px',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                }}>
+                    ➕ 10以内的加减法 ➖
+                </h1>
 
+                {/* Icon Selector */}
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap'
+                }}>
+                    <span style={{
+                        color: '#558B2F',
+                        fontWeight: '600',
+                        fontSize: 'clamp(14px, 3.5vw, 16px)'
+                    }}>选择图标:</span>
+                    {['apple', 'duck', 'star'].map(type => (
+                        <button
+                            key={type}
+                            onClick={() => setIconType(type)}
+                            style={{
+                                fontSize: 'clamp(24px, 6vw, 32px)',
+                                padding: '8px 16px',
+                                border: iconType === type ? '3px solid #4CAF50' : '3px solid transparent',
+                                borderRadius: '16px',
+                                background: iconType === type
+                                    ? 'rgba(76, 175, 80, 0.15)'
+                                    : 'rgba(255,255,255,0.7)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                boxShadow: iconType === type
+                                    ? '0 4px 16px rgba(76, 175, 80, 0.3)'
+                                    : '0 2px 8px rgba(0,0,0,0.05)',
+                                minWidth: '56px',
+                                minHeight: '56px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            {type === 'apple' ? '🍎' : (type === 'duck' ? '🦆' : '⭐')}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div style={{ width: '100%', padding: '0 20px', boxSizing: 'border-box' }}>
                 {/* Tabs */}
                 <div className="lab-tabs">
                     <button className={`lab-tab ${activeTab === 'add' ? 'active' : ''}`} onClick={() => setActiveTab('add')}>➕ 加法 (合起来)</button>
@@ -1365,41 +1843,51 @@ function MathAddSubtract() {
                         flex-direction: column;
                         align-items: stretch;
                         gap: 10px;
+                        padding: 0 15px;
+                    }
+                    .lab-tab {
+                        text-align: center;
+                        padding: 14px 20px;
+                        font-size: 16px;
                     }
                     .lab-content {
-                        padding: 20px;
+                        padding: 15px 10px;
                     }
+                    
+                    /* Bonds Module - uses scale due to absolute positioning */
                     .bonds-wrapper {
                         flex-direction: column !important;
                         align-items: center !important;
                         padding: 10px !important;
-                        gap: 20px !important;
+                        gap: 15px !important;
+                        min-height: auto !important;
                     }
                     .bonds-left-panel {
                         width: 100% !important;
                     }
                     .bonds-stage-scale-wrapper {
-                        transform: scale(0.55);
+                        transform: scale(0.58);
                         transform-origin: top center;
-                        margin-bottom: -160px !important; /* Compensate for scaling */
+                        margin-bottom: -150px !important;
+                        width: 100% !important;
+                        height: auto !important;
                     }
-                    .bonds-controls {
-                        flex-direction: column;
-                        align-items: center;
+                    .bonds-narration {
+                        font-size: 16px !important;
+                        padding: 10px 20px !important;
+                        margin-bottom: 15px !important;
                     }
-                    /* Adjust Addition Module Layout */
-                    .addition-equation-row {
-                        flex-wrap: nowrap !important;
-                        transform: scale(0.65);
-                        transform-origin: top center;
-                        width: 154% !important;
-                        margin-bottom: -60px !important;
+                }
+                
+                /* Extra small devices */
+                @media (max-width: 480px) {
+                    .lab-tab {
+                        font-size: 14px;
+                        padding: 12px 16px;
                     }
-                    
-                    /* Adjust Subtraction Module Tray */
-                    .subtraction-tray-scale-wrapper {
-                        transform: scale(0.85);
-                        transform-origin: center top;
+                    .bonds-stage-scale-wrapper {
+                        transform: scale(0.5);
+                        margin-bottom: -170px !important;
                     }
                 }
             `}</style>
