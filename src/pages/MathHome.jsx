@@ -118,6 +118,7 @@ function MathHome() {
   const cards = [
     {
       to: "/math/number-sense-20",
+      practiceTo: "/math/number-sense-20/practice",
       icon: "🔢",
       color: "#FF9500",
       bg: "linear-gradient(135deg, #FF9500 0%, #FFCC00 100%)",
@@ -127,6 +128,7 @@ function MathHome() {
     },
     {
       to: "/math/add-subtract",
+      practiceTo: "/math/add-subtract/practice",
       icon: "➕",
       color: "#4CAF50",
       bg: "linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)",
@@ -198,6 +200,9 @@ function MathHome() {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.1);
           }
+          .math-card {
+            cursor: pointer;
+          }
           .math-card:hover {
             transform: translateY(-12px) scale(1.02);
             z-index: 10;
@@ -206,13 +211,13 @@ function MathHome() {
             transform: scale(1.1) rotate(6deg);
             box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
           }
-          .math-card .cta-btn {
+          .cta-btn {
             background: #f7fafc;
             color: #4a5568;
             box-shadow: inset 0 0 0 1px #e2e8f0;
           }
-          .math-card:hover .cta-btn {
-            color: white;
+          .cta-btn:hover {
+            color: white; /* Will be overridden inline */
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transform: translateY(-2px);
           }
@@ -240,34 +245,67 @@ function MathHome() {
       {/* Dashboard Grid */}
       <div style={styles.grid}>
         {cards.map((card, index) => (
-          <Link
+          <div
             key={index}
-            to={card.to}
             className="math-card"
             style={styles.card}
           >
-            <div
-              className="icon-box"
-              style={{
-                ...styles.iconBox,
-                color: card.color
-              }}
+            {/* Clickable Area for Demo */}
+            <Link 
+              to={card.to} 
+              style={{textDecoration: 'none', color: 'inherit', display:'flex', flexDirection:'column', alignItems:'center', width: '100%', flexGrow: 1}}
             >
-              {card.icon}
-            </div>
+              <div
+                className="icon-box"
+                style={{
+                  ...styles.iconBox,
+                  color: card.color
+                }}
+              >
+                {card.icon}
+              </div>
 
-            <div style={styles.cardTitle}>{card.title}</div>
-            <div style={styles.cardDesc}>{card.desc}</div>
+              <div style={styles.cardTitle}>{card.title}</div>
+              <div style={styles.cardDesc}>{card.desc}</div>
+            </Link>
 
-            <div
-              className="cta-btn"
-              style={styles.cta}
-              onMouseEnter={(e) => e.currentTarget.style.background = card.bg}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#f7fafc'}
-            >
-              {card.cta} <span>→</span>
+            {/* Actions Area */}
+            <div style={{display: 'flex', gap: '10px', marginTop: 'auto', width: '100%', justifyContent: 'center'}}>
+              <Link
+                to={card.to}
+                className="cta-btn"
+                style={styles.cta}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = card.bg;
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                   e.currentTarget.style.background = '#f7fafc';
+                   e.currentTarget.style.color = '#4a5568';
+                }}
+              >
+                演示 <span>📺</span>
+              </Link>
+              
+              {card.practiceTo && (
+                <Link
+                  to={card.practiceTo}
+                  className="cta-btn"
+                  style={styles.cta}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = card.bg;
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#f7fafc';
+                    e.currentTarget.style.color = '#4a5568';
+                  }}
+                >
+                  练习 <span>✏️</span>
+                </Link>
+              )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

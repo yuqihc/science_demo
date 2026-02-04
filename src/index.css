@@ -501,3 +501,12 @@ input[type=range]::-webkit-slider-runnable-track {
     .track { height: 80px; }
     .car-container { width: 80px; height: 40px; bottom: 10px; }
 }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate3d(0, 40px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}

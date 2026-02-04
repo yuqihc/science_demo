@@ -12,6 +12,8 @@ import SolidShapes from './pages/SolidShapes';
 import SubtractBreakTen from './pages/SubtractBreakTen';
 import EquationSolver from './pages/math/EquationSolver';
 import PlaceValue2D from './pages/math/PlaceValue2D';
+import NumberSense20Practice from './pages/practice/NumberSense20Practice';
+import AddSubtractPractice from './pages/practice/AddSubtractPractice';
 
 function App() {
   return (
@@ -25,7 +27,9 @@ function App() {
         {/* Math Routes */}
         <Route path="/math" element={<MathHome />} />
         <Route path="/math/number-sense-20" element={<NumberSense20 />} />
+        <Route path="/math/number-sense-20/practice" element={<NumberSense20Practice />} />
         <Route path="/math/add-subtract" element={<MathAddSubtract />} />
+        <Route path="/math/add-subtract/practice" element={<AddSubtractPractice />} />
         <Route path="/math/carry-add" element={<MathCarryAdd />} />
         <Route path="/math/subtract-break-ten" element={<SubtractBreakTen />} />
         <Route path="/math/solid-shapes" element={<SolidShapes />} />
