@@ -1,0 +1,116 @@
+.bottom-action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.94);
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 -12px 34px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.bottom-action-bar-spacer {
+  width: 100%;
+  flex: 0 0 auto;
+  pointer-events: none;
+}
+
+.bottom-action-bar-inner {
+  width: min(760px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 10px;
+}
+
+.bottom-action {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+  touch-action: manipulation;
+}
+
+.bottom-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.13);
+}
+
+.bottom-action:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.bottom-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+  box-shadow: none;
+}
+
+.bottom-action.is-primary {
+  border-color: transparent;
+  background: #f97316;
+  color: #fff;
+}
+
+.bottom-action.is-success {
+  border-color: transparent;
+  background: #16a34a;
+  color: #fff;
+}
+
+.bottom-action.is-danger {
+  border-color: transparent;
+  background: #db2777;
+  color: #fff;
+}
+
+.bottom-action.is-warning {
+  border-color: transparent;
+  background: #f59e0b;
+  color: #fff;
+}
+
+.bottom-action.is-purple {
+  border-color: transparent;
+  background: #7c3aed;
+  color: #fff;
+}
+
+.bottom-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 420px) {
+  .bottom-action-bar-inner {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .bottom-action {
+    min-height: 48px;
+    padding: 0 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 340px) {
+  .bottom-action-bar-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

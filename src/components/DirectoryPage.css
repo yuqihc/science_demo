@@ -1,0 +1,304 @@
+.directory-page {
+  --page-accent: #2563eb;
+  --page-accent-2: #f59e0b;
+  width: 100vw;
+  min-height: 100vh;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 32px 18px 72px;
+  box-sizing: border-box;
+  color: #111827;
+  background:
+    radial-gradient(760px 420px at 8% 0%, color-mix(in srgb, var(--page-accent) 14%, transparent), transparent 60%),
+    radial-gradient(720px 440px at 92% 12%, color-mix(in srgb, var(--page-accent-2) 12%, transparent), transparent 62%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+}
+
+.directory-tone-math {
+  --page-accent: #f97316;
+  --page-accent-2: #0ea5e9;
+}
+
+.directory-tone-physics {
+  --page-accent: #2563eb;
+  --page-accent-2: #7c3aed;
+}
+
+.directory-container {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.directory-nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.directory-nav:empty {
+  display: none;
+}
+
+.directory-nav-button,
+.directory-action {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+  color: #111827;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 750;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  touch-action: manipulation;
+}
+
+.directory-nav-button:hover,
+.directory-action:hover,
+.directory-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.11);
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+.directory-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.directory-hero-copy,
+.directory-aside,
+.directory-about {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.07);
+  backdrop-filter: blur(14px);
+}
+
+.directory-hero-copy {
+  padding: clamp(26px, 5vw, 46px);
+}
+
+.directory-badge,
+.directory-card-kicker,
+.directory-aside p,
+.directory-about p {
+  margin: 0;
+  color: color-mix(in srgb, var(--page-accent) 72%, #1f2937);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.directory-hero h1 {
+  max-width: 760px;
+  margin: 12px 0 14px;
+  color: #0f172a;
+  font-size: clamp(36px, 7vw, 68px);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.directory-hero-copy > p:not(.directory-badge) {
+  max-width: 720px;
+  margin: 0;
+  color: #4b5563;
+  font-size: clamp(16px, 2.4vw, 19px);
+  line-height: 1.75;
+}
+
+.directory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.directory-action.is-primary {
+  border-color: transparent;
+  background: var(--page-accent);
+  color: #fff;
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--page-accent) 26%, transparent);
+}
+
+.directory-action.is-compact {
+  width: 100%;
+  margin-top: auto;
+  justify-content: space-between;
+}
+
+.directory-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+}
+
+.directory-aside h2,
+.directory-about h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.directory-aside span,
+.directory-about span {
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.directory-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.directory-card {
+  position: relative;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 42%),
+    rgba(255, 255, 255, 0.8);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.07);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.directory-card.is-disabled {
+  opacity: 0.58;
+}
+
+.directory-card-top,
+.directory-card-action,
+.directory-status {
+  display: flex;
+  align-items: center;
+}
+
+.directory-card-top {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.directory-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.directory-status {
+  gap: 6px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.directory-status.is-ready {
+  color: #15803d;
+}
+
+.directory-card-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.directory-card-copy h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.directory-card-copy p:last-child {
+  margin: 0;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.directory-card-action {
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.directory-about {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 24px;
+}
+
+@media (max-width: 820px) {
+  .directory-page {
+    padding: 18px 14px 88px;
+  }
+
+  .directory-hero,
+  .directory-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .directory-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 8px 0;
+    backdrop-filter: blur(12px);
+  }
+
+  .directory-nav-button,
+  .directory-action {
+    min-height: 48px;
+  }
+
+  .directory-actions .directory-action {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .directory-card {
+    min-height: 190px;
+  }
+}
+
+@media (max-width: 480px) {
+  .directory-hero-copy,
+  .directory-aside,
+  .directory-about,
+  .directory-card {
+    padding: 18px;
+  }
+
+  .directory-card-copy h2 {
+    font-size: 21px;
+  }
+}

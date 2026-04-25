@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import { Link } from 'react-router-dom';
+import BottomActionBar from '../../components/BottomActionBar';
 
 const EquationSolver = () => {
     const [step, setStep] = useState(0); // 0: Start, 1: Focus, 2: Moved, 3: Cancelled/Done
@@ -732,7 +733,34 @@ const EquationSolver = () => {
                     </div>
                 </div>
 
+                <BottomActionBar
+                    actions={[
+                        {
+                            key: 'next',
+                            label: getButtonText(),
+                            icon: step >= 3 ? '✓' : '→',
+                            onClick: handleNextStep,
+                            disabled: isAnimating || step >= 3,
+                            variant: 'primary'
+                        },
+                        {
+                            key: 'replay',
+                            label: '再次演示',
+                            icon: '↺',
+                            onClick: resetScene,
+                            disabled: isAnimating
+                        },
+                        {
+                            key: 'reset',
+                            label: '重置',
+                            icon: '⟲',
+                            onClick: reset
+                        }
+                    ]}
+                />
+
                 {/* Controls */}
+                {false && (
                 <div className="flex flex-col sm:flex-row justify-center gap-4 pb-8">
                     <button
                         onClick={handleNextStep}
@@ -767,6 +795,7 @@ const EquationSolver = () => {
                         </button>
                     </div>
                 </div>
+                )}
 
             </div>
         </div>

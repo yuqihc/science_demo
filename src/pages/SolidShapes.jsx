@@ -834,6 +834,7 @@ const SolidShapes = () => {
   const [isControlsExpanded, setIsControlsExpanded] = useState(true); // Default expanded
   const [history, setHistory] = useState([[]]); // History for undo
   const [hdrAvailable, setHdrAvailable] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Reset state when shape changes
   useEffect(() => {
@@ -866,6 +867,14 @@ const SolidShapes = () => {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 768px)');
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
   }, []);
 
   const updateBlocks = (newBlocks) => {
@@ -983,7 +992,7 @@ const SolidShapes = () => {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} castShadow />
         <pointLight position={[-10, -10, -10]} intensity={0.5} />
-        {hdrAvailable && (
+        {hdrAvailable && !isMobile && (
           <SilentErrorBoundary fallback={null}>
             <React.Suspense fallback={null}>
               <Environment files="./hdri/potsdamer_platz_1k.hdr" />
@@ -1005,7 +1014,7 @@ const SolidShapes = () => {
                         {currentShape === 'sphere' && <SphereModule size={sphereSize} />}
                     </Float>
                 </Center>
-                <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
+                {!isMobile && <ContactShadows position={[0, -2, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />}
              </group>
         )}
 
@@ -1324,6 +1333,71 @@ const SolidShapes = () => {
                 </button>
             </div>
           )}
+      </div>
+
+      <div className="solid-mobile-actions" style={{
+          position: 'fixed',
+          left: '12px',
+          right: '12px',
+          bottom: 'calc(108px + env(safe-area-inset-bottom))',
+          zIndex: 2100,
+          display: isMobile ? 'grid' : 'none',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: '10px',
+          pointerEvents: 'auto'
+      }}>
+        {(currentShape === 'cube' || currentShape === 'cuboid' || currentShape === 'cylinder' || currentShape === 'cone') && (
+          <button
+            onClick={() => setIsFolded(!isFolded)}
+            style={{
+              minHeight: '48px',
+              border: 'none',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
+              color: '#fff',
+              fontSize: '15px',
+              fontWeight: 800,
+              boxShadow: '0 8px 20px rgba(15, 23, 42, 0.16)'
+            }}
+          >
+            {isFolded ? '展开' : '折叠'}
+          </button>
+        )}
+
+        {currentShape === 'builder' && (
+          <button
+            onClick={handleUndo}
+            disabled={history.length <= 1 || previewMode}
+            style={{
+              minHeight: '48px',
+              border: 'none',
+              borderRadius: '8px',
+              background: history.length <= 1 || previewMode ? '#e5e7eb' : '#f59e0b',
+              color: history.length <= 1 || previewMode ? '#94a3b8' : '#fff',
+              fontSize: '15px',
+              fontWeight: 800,
+              boxShadow: '0 8px 20px rgba(15, 23, 42, 0.16)'
+            }}
+          >
+            撤销
+          </button>
+        )}
+
+        <button
+          onClick={resetAll}
+          style={{
+            minHeight: '48px',
+            border: 'none',
+            borderRadius: '8px',
+            background: 'linear-gradient(135deg, #607D8B 0%, #455A64 100%)',
+            color: '#fff',
+            fontSize: '15px',
+            fontWeight: 800,
+            boxShadow: '0 8px 20px rgba(15, 23, 42, 0.16)'
+          }}
+        >
+          重置
+        </button>
       </div>
 
       {/* Navigation */}

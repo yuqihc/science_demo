@@ -1,0 +1,95 @@
+.lesson-shell {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px 16px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #172033;
+}
+
+.lesson-shell-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.lesson-shell-blue {
+  background: linear-gradient(135deg, #e0f2fe 0%, #f5f3ff 100%);
+}
+
+.lesson-shell-nav,
+.lesson-shell-header,
+.lesson-shell-content {
+  width: min(900px, 100%);
+  margin-inline: auto;
+}
+
+.lesson-shell-nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.lesson-shell-back {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(14px);
+  touch-action: manipulation;
+}
+
+.lesson-shell-blue .lesson-shell-back {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  color: #1e293b;
+}
+
+.lesson-shell-header {
+  margin-bottom: 28px;
+  text-align: center;
+  color: #fff;
+}
+
+.lesson-shell-blue .lesson-shell-header {
+  color: #172033;
+}
+
+.lesson-shell-header h1 {
+  margin: 0 0 10px;
+  font-size: clamp(30px, 7vw, 46px);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.lesson-shell-header p {
+  margin: 0;
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.lesson-card {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(18px);
+}
+
+@media (max-width: 640px) {
+  .lesson-shell {
+    padding-inline: 12px;
+  }
+
+  .lesson-shell-nav {
+    margin-bottom: 22px;
+  }
+}

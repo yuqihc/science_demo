@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
+import BottomActionBar from '../components/BottomActionBar';
 
 // 音效工具函数
 const playPopSound = () => {
@@ -62,7 +63,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
     const steps = ['开始', '找缺口', '拆小数', '凑成十', '计算', '完成'];
 
     return (
-        <div style={{
+        <div className="carry-step-indicator" style={{
             display: 'flex',
             justifyContent: 'center',
             gap: '8px',
@@ -77,7 +78,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
                     alignItems: 'center',
                     gap: '4px'
                 }}>
-                    <div style={{
+                    <div className="carry-step-dot" style={{
                         width: currentStep === i ? '32px' : '24px',
                         height: currentStep === i ? '32px' : '24px',
                         borderRadius: '50%',
@@ -95,7 +96,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
                     }}>
                         {i + 1}
                     </div>
-                    <span style={{
+                    <span className="carry-step-label" style={{
                         fontSize: '10px',
                         color: i <= currentStep ? '#FF9800' : '#999',
                         fontWeight: i === currentStep ? 'bold' : 'normal',
@@ -110,7 +111,7 @@ const StepIndicator = ({ currentStep, totalSteps }) => {
 // 数字选择器组件
 const NumberSelector = ({ label, value, min, max, onChange, color }) => {
     return (
-        <div style={{
+        <div className="carry-number-selector" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
@@ -353,7 +354,7 @@ const MakeTenModule = ({ iconType }) => {
     };
 
     return (
-        <div style={{
+        <div className="make-ten-module" style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -365,7 +366,7 @@ const MakeTenModule = ({ iconType }) => {
             <StepIndicator currentStep={step} totalSteps={6} />
 
             {/* 提示消息 */}
-            <div style={{
+            <div className="make-ten-message" style={{
                 fontSize: 'clamp(16px, 4vw, 20px)',
                 fontWeight: 'bold',
                 color: '#E65100',
@@ -394,7 +395,7 @@ const MakeTenModule = ({ iconType }) => {
                 padding: '0 10px'
             }}>
                 {/* 左边 */}
-                <div style={{
+                <div className="make-ten-side-panel" style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -404,7 +405,7 @@ const MakeTenModule = ({ iconType }) => {
                     maxWidth: '320px'
                 }}>
                     {renderGrid(num1, true)}
-                    <div style={{
+                    <div className="make-ten-number-badge" style={{
                         fontSize: 'clamp(28px, 6vw, 36px)',
                         fontWeight: 'bold',
                         color: '#D32F2F',
@@ -420,7 +421,7 @@ const MakeTenModule = ({ iconType }) => {
                 </div>
 
                 {/* 加号 */}
-                <div style={{
+                <div className="make-ten-plus" style={{
                     fontSize: 'clamp(36px, 8vw, 56px)',
                     color: '#FF9800',
                     fontWeight: 'bold',
@@ -428,7 +429,7 @@ const MakeTenModule = ({ iconType }) => {
                 }}>+</div>
 
                 {/* 右边 */}
-                <div style={{
+                <div className="make-ten-side-panel" style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -438,7 +439,7 @@ const MakeTenModule = ({ iconType }) => {
                     maxWidth: '320px'
                 }}>
                     {renderGrid(num2, false)}
-                    <div style={{
+                    <div className="make-ten-number-badge" style={{
                         fontSize: 'clamp(28px, 6vw, 36px)',
                         fontWeight: 'bold',
                         color: '#1976D2',
@@ -456,7 +457,7 @@ const MakeTenModule = ({ iconType }) => {
 
             {/* 算式显示 */}
             {step >= 2 && (
-                <div style={{
+                <div className="make-ten-formula" style={{
                     fontSize: 'clamp(20px, 5vw, 32px)',
                     fontWeight: 'bold',
                     color: '#333',
@@ -483,7 +484,7 @@ const MakeTenModule = ({ iconType }) => {
             )}
 
             {/* 数字选择器 */}
-            <div style={{
+            <div className="make-ten-number-selectors" style={{
                 display: 'flex',
                 gap: '16px',
                 flexWrap: 'wrap',
@@ -521,7 +522,27 @@ const MakeTenModule = ({ iconType }) => {
             </div>
 
             {/* 固定底部控制栏 */}
-            <div className="make-ten-controls" style={{
+            <BottomActionBar
+                className="make-ten-controls"
+                actions={[
+                    {
+                        key: 'next',
+                        label: step < 5 ? '下一步' : '换一题',
+                        icon: step < 5 ? '→' : '🎲',
+                        onClick: nextStep,
+                        disabled: isAnimating,
+                        variant: 'primary'
+                    },
+                    {
+                        key: 'reset',
+                        label: '重置',
+                        icon: '↺',
+                        onClick: reset
+                    }
+                ]}
+            />
+            {false && (
+            <div style={{
                 position: 'fixed',
                 bottom: 0,
                 left: 0,
@@ -565,7 +586,6 @@ const MakeTenModule = ({ iconType }) => {
                     style={{
                         padding: '14px 28px',
                         borderRadius: '50px',
-                        border: 'none',
                         fontSize: 'clamp(16px, 4vw, 18px)',
                         fontWeight: 'bold',
                         cursor: 'pointer',
@@ -579,6 +599,7 @@ const MakeTenModule = ({ iconType }) => {
                     🔄 重置
                 </button>
             </div>
+            )}
         </div>
     );
 };
@@ -588,14 +609,14 @@ function MathCarryAdd() {
     const [iconType, setIconType] = useState('apple');
 
     return (
-        <div style={{
+        <div className="carry-add-page" style={{
             minHeight: '100vh',
             background: 'linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
             paddingBottom: '20px'
         }}>
             {/* Navigation */}
-            <div style={{
+            <div className="carry-add-nav" style={{
                 width: '100%',
                 padding: '20px',
                 boxSizing: 'border-box'
@@ -621,7 +642,7 @@ function MathCarryAdd() {
             </div>
 
             {/* Header */}
-            <div style={{
+            <div className="carry-add-header" style={{
                 textAlign: 'center',
                 marginBottom: '30px',
                 padding: '0 20px'
@@ -636,7 +657,7 @@ function MathCarryAdd() {
                 }}>
                     🔟 20以内进位加法
                 </h1>
-                <p style={{
+                <p className="carry-add-subtitle" style={{
                     color: '#5c6bc0',
                     margin: '0 0 20px 0',
                     fontSize: 'clamp(14px, 3.5vw, 18px)',
@@ -646,7 +667,7 @@ function MathCarryAdd() {
                 </p>
 
                 {/* Icon Selector */}
-                <div style={{
+                <div className="carry-add-icon-row" style={{
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -708,14 +729,148 @@ function MathCarryAdd() {
                     transform: translateY(0);
                 }
 
-                @media (max-width: 640px) {
+                @media (max-width: 900px) {
+                    .carry-add-page {
+                        padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+                    }
+                    .carry-add-nav {
+                        padding: 12px 14px 8px !important;
+                    }
+                    .carry-add-header {
+                        margin-bottom: 12px !important;
+                        padding: 0 14px !important;
+                    }
+                    .carry-add-header h1 {
+                        margin-bottom: 8px !important;
+                        font-size: 24px !important;
+                        letter-spacing: 0 !important;
+                    }
+                    .carry-add-subtitle {
+                        margin-bottom: 10px !important;
+                        font-size: 14px !important;
+                    }
+                    .carry-add-icon-row {
+                        gap: 8px !important;
+                    }
+                    .carry-add-icon-row > span {
+                        width: 100%;
+                        font-size: 13px !important;
+                    }
+                    .carry-add-icon-row button {
+                        min-width: 44px !important;
+                        min-height: 44px !important;
+                        padding: 4px 10px !important;
+                        border-radius: 12px !important;
+                        font-size: 24px !important;
+                    }
+                    .make-ten-module {
+                        padding: 0 0 88px !important;
+                        min-height: auto !important;
+                    }
+                    .carry-step-indicator {
+                        gap: 5px !important;
+                        margin-bottom: 10px !important;
+                        padding: 0 8px !important;
+                    }
+                    .carry-step-dot {
+                        width: 24px !important;
+                        height: 24px !important;
+                        font-size: 12px !important;
+                    }
+                    .carry-step-label {
+                        font-size: 9px !important;
+                    }
+                    .make-ten-message {
+                        max-width: calc(100% - 24px) !important;
+                        margin-bottom: 12px !important;
+                        padding: 10px 16px !important;
+                        border-radius: 14px !important;
+                        font-size: 15px !important;
+                        line-height: 1.35 !important;
+                    }
                     .make-ten-main-stage {
-                        flex-direction: column !important;
-                        gap: 20px !important;
+                        flex-direction: row !important;
+                        flex-wrap: nowrap !important;
+                        align-items: flex-start !important;
+                        gap: 6px !important;
+                        margin-bottom: 12px !important;
+                        padding: 0 8px !important;
+                        box-sizing: border-box !important;
+                        max-width: 100vw !important;
+                        overflow: hidden !important;
+                    }
+                    .make-ten-side-panel {
+                        min-width: 0 !important;
+                        max-width: none !important;
+                        flex: 1 1 0 !important;
+                        gap: 8px !important;
+                    }
+                    .maket-ten-left-grid,
+                    .maket-ten-right-grid {
+                        width: calc((100vw - 56px) / 2) !important;
+                        max-width: 168px !important;
+                        min-width: 0 !important;
+                        padding: 9px !important;
+                        gap: 4px !important;
+                        border-radius: 14px !important;
+                        border-width: 2px !important;
+                    }
+                    .maket-ten-left-grid > div,
+                    .maket-ten-right-grid > div {
+                        border-width: 1px !important;
+                        min-width: 0 !important;
+                        overflow: visible !important;
+                    }
+                    .mt-item {
+                        font-size: 20px !important;
+                        line-height: 1 !important;
+                        display: inline-flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        max-width: 100% !important;
+                    }
+                    .make-ten-plus {
+                        flex: 0 0 18px !important;
+                        font-size: 28px !important;
+                        margin-top: 44px !important;
+                    }
+                    .make-ten-number-badge {
+                        min-width: 54px !important;
+                        padding: 6px 14px !important;
+                        font-size: 24px !important;
+                    }
+                    .make-ten-formula {
+                        margin-bottom: 12px !important;
+                        padding: 12px 16px !important;
+                        border-radius: 14px !important;
+                        font-size: 24px !important;
+                    }
+                    .make-ten-number-selectors {
+                        gap: 8px !important;
+                        margin-bottom: 8px !important;
+                        padding: 0 10px !important;
+                    }
+                    .carry-number-selector {
+                        min-width: 0 !important;
+                        flex: 1 1 calc(50% - 8px) !important;
+                        padding: 10px 12px !important;
+                        border-radius: 14px !important;
+                        gap: 8px !important;
+                    }
+                    .carry-number-selector > span {
+                        min-width: 32px !important;
+                        font-size: 13px !important;
+                    }
+                    .carry-number-selector button {
+                        width: 32px !important;
+                        height: 32px !important;
+                    }
+                    .carry-number-selector div {
+                        gap: 8px !important;
                     }
                 }
                 
-                @media (min-width: 641px) {
+                @media (min-width: 901px) {
                     .make-ten-controls {
                         position: relative !important;
                         box-shadow: none !important;

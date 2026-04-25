@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
+import BottomActionBar from '../components/BottomActionBar';
 
 // 音效工具函数
 const playPopSound = () => {
@@ -230,7 +231,7 @@ const AdditionModule = ({ iconType }) => {
     const isOverLimit = num1 + num2 > 10;
 
     return (
-        <div style={{
+        <div className="addition-module" style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -435,7 +436,7 @@ const AdditionModule = ({ iconType }) => {
             )}
 
             {/* Equation Display */}
-            <div style={{
+            <div className="addition-equation" style={{
                 fontSize: 'clamp(28px, 7vw, 48px)',
                 fontFamily: 'Comic Sans MS, cursive',
                 color: '#2E7D32',
@@ -462,7 +463,7 @@ const AdditionModule = ({ iconType }) => {
             )}
 
             {/* Number Selectors */}
-            <div style={{
+            <div className="addition-number-selectors" style={{
                 display: 'flex',
                 gap: '16px',
                 flexWrap: 'wrap',
@@ -572,6 +573,25 @@ const AdditionModule = ({ iconType }) => {
                     }}
                 >🎲 换一题</button>
             </div>
+            <BottomActionBar
+                className="math-add-mobile-actions"
+                actions={[
+                    {
+                        key: 'merge',
+                        label: '合并',
+                        icon: '+',
+                        onClick: handleMerge,
+                        disabled: isMerged || isOverLimit,
+                        variant: 'primary'
+                    },
+                    {
+                        key: 'random',
+                        label: '换一题',
+                        icon: '↻',
+                        onClick: generateRandom
+                    }
+                ]}
+            />
         </div>
     );
 };
@@ -843,7 +863,7 @@ const SubtractionModule = ({ iconType }) => {
     }, []);
 
     return (
-        <div style={{
+        <div className="subtraction-module" style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -852,7 +872,7 @@ const SubtractionModule = ({ iconType }) => {
             boxSizing: 'border-box'
         }}>
             {/* Narration */}
-            <div style={{
+            <div className="subtraction-narration" style={{
                 fontSize: 'clamp(16px, 4vw, 20px)',
                 fontWeight: 'bold',
                 color: '#E65100',
@@ -871,7 +891,7 @@ const SubtractionModule = ({ iconType }) => {
             </div>
 
             {/* Item Tray */}
-            <div style={{
+            <div className="subtraction-tray" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(5, 1fr)',
                 gap: 'clamp(8px, 2vw, 14px)',
@@ -956,7 +976,7 @@ const SubtractionModule = ({ iconType }) => {
             </div>
 
             {/* Equation Display */}
-            <div style={{
+            <div className="subtraction-equation" style={{
                 fontSize: 'clamp(28px, 7vw, 48px)',
                 fontFamily: 'Comic Sans MS, cursive',
                 color: '#2E7D32',
@@ -968,7 +988,7 @@ const SubtractionModule = ({ iconType }) => {
             </div>
 
             {/* Status Text */}
-            <div style={{
+            <div className="subtraction-status" style={{
                 fontSize: 'clamp(14px, 3.5vw, 18px)',
                 fontWeight: 'bold',
                 color: '#558B2F',
@@ -979,7 +999,7 @@ const SubtractionModule = ({ iconType }) => {
             </div>
 
             {/* Number Selector */}
-            <div style={{
+            <div className="subtraction-total-selector" style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
@@ -1008,7 +1028,7 @@ const SubtractionModule = ({ iconType }) => {
             </div>
 
             {/* Action Buttons */}
-            <div style={{
+            <div className="subtraction-controls" style={{
                 display: 'flex',
                 gap: '12px',
                 justifyContent: 'center',
@@ -1071,6 +1091,33 @@ const SubtractionModule = ({ iconType }) => {
                     }}
                 >🔄 重置</button>
             </div>
+            <BottomActionBar
+                className="math-add-mobile-actions"
+                actions={[
+                    {
+                        key: 'take-one',
+                        label: '拿走一个',
+                        icon: '-',
+                        onClick: takeOne,
+                        disabled: isAnimating || isLocked || visibleRemaining <= 0,
+                        variant: 'danger'
+                    },
+                    {
+                        key: 'put-back',
+                        label: '拿回来',
+                        icon: '↩',
+                        onClick: putBackOne,
+                        disabled: isAnimating || isLocked || removedCount <= 0 || !showReturnAction,
+                        variant: 'primary'
+                    },
+                    {
+                        key: 'reset',
+                        label: '重置',
+                        icon: '↻',
+                        onClick: resetToTen
+                    }
+                ]}
+            />
         </div>
     );
 };
@@ -1078,6 +1125,9 @@ const SubtractionModule = ({ iconType }) => {
 // ==========================================
 // 3. 数的组成 (Number Bonds Redesign)
 // ==========================================
+const BONDS_STAGE_WIDTH = 600;
+const BONDS_STAGE_HEIGHT = 400;
+
 const NumberBondsModule = () => {
     const containerRef = useRef(null);
     const [balls, setBalls] = useState([]);
@@ -1138,8 +1188,10 @@ const NumberBondsModule = () => {
     const handleDragEnd = (id, clientX, clientY) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
-        const mouseX = clientX - rect.left - rect.width / 2;
-        const mouseY = clientY - rect.top - rect.height / 2;
+        const scaleX = rect.width / BONDS_STAGE_WIDTH || 1;
+        const scaleY = rect.height / BONDS_STAGE_HEIGHT || 1;
+        const mouseX = (clientX - rect.left) / scaleX - BONDS_STAGE_WIDTH / 2;
+        const mouseY = (clientY - rect.top) / scaleY - BONDS_STAGE_HEIGHT / 2;
 
         let targetContainer = 'BOTTOM';
 
@@ -1288,21 +1340,39 @@ const NumberBondsModule = () => {
 
                 {/* 分支图容器 - Scale Wrapper for Mobile */}
                 <div className="bonds-stage-scale-wrapper" style={{
-                    width: '600px',
-                    height: '400px',
+                    width: `${BONDS_STAGE_WIDTH}px`,
+                    height: `${BONDS_STAGE_HEIGHT}px`,
                     display: 'flex',
                     justifyContent: 'center'
                 }}>
-                    <div ref={containerRef} style={{
+                    <div ref={containerRef} className="bonds-stage-canvas" style={{
                         position: 'relative',
-                        width: '600px',
-                        height: '400px',
+                        width: `${BONDS_STAGE_WIDTH}px`,
+                        height: `${BONDS_STAGE_HEIGHT}px`,
                         marginTop: '20px'
                     }}>
                         {/* 连接线 (SVG) */}
                         <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
-                            <line x1="300" y1="40" x2="140" y2="280" stroke="#8D6E63" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
-                            <line x1="300" y1="40" x2="460" y2="280" stroke="#8D6E63" strokeWidth="12" strokeLinecap="round" opacity="0.6" />
+                            <line
+                                x1={BONDS_STAGE_WIDTH / 2 + POSITIONS.WHOLE.x}
+                                y1={BONDS_STAGE_HEIGHT / 2 + POSITIONS.WHOLE.y}
+                                x2={BONDS_STAGE_WIDTH / 2 + POSITIONS.PART1.x}
+                                y2={BONDS_STAGE_HEIGHT / 2 + POSITIONS.PART1.y}
+                                stroke="#8D6E63"
+                                strokeWidth="12"
+                                strokeLinecap="round"
+                                opacity="0.6"
+                            />
+                            <line
+                                x1={BONDS_STAGE_WIDTH / 2 + POSITIONS.WHOLE.x}
+                                y1={BONDS_STAGE_HEIGHT / 2 + POSITIONS.WHOLE.y}
+                                x2={BONDS_STAGE_WIDTH / 2 + POSITIONS.PART2.x}
+                                y2={BONDS_STAGE_HEIGHT / 2 + POSITIONS.PART2.y}
+                                stroke="#8D6E63"
+                                strokeWidth="12"
+                                strokeLinecap="round"
+                                opacity="0.6"
+                            />
                         </svg>
 
                         {/* 三个大圆圈 - 背景层 */}
@@ -1528,8 +1598,10 @@ const Ball = ({ ball, onDragEnd }) => {
     const handlePointerMove = (e) => {
         if (!isDragging) return;
         const rect = e.target.parentElement.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
+        const scaleX = rect.width / BONDS_STAGE_WIDTH || 1;
+        const scaleY = rect.height / BONDS_STAGE_HEIGHT || 1;
+        const x = (e.clientX - rect.left) / scaleX - BONDS_STAGE_WIDTH / 2;
+        const y = (e.clientY - rect.top) / scaleY - BONDS_STAGE_HEIGHT / 2;
         gsap.set(ballRef.current, { x, y });
     };
 
@@ -1573,14 +1645,14 @@ function MathAddSubtract() {
     const [iconType, setIconType] = useState('apple');
 
     return (
-        <div style={{
+        <div className="math-add-subtract-page" style={{
             minHeight: '100vh',
             background: 'linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 50%, #DCEDC8 100%)',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
             paddingBottom: '20px'
         }}>
             {/* Navigation */}
-            <div style={{
+            <div className="math-add-nav" style={{
                 width: '100%',
                 padding: '20px',
                 boxSizing: 'border-box'
@@ -1606,7 +1678,7 @@ function MathAddSubtract() {
             </div>
 
             {/* Header */}
-            <div style={{
+            <div className="math-add-page-header" style={{
                 textAlign: 'center',
                 marginBottom: '30px',
                 padding: '0 20px'
@@ -1623,7 +1695,7 @@ function MathAddSubtract() {
                 </h1>
 
                 {/* Icon Selector */}
-                <div style={{
+                <div className="math-add-icon-row" style={{
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -1666,7 +1738,7 @@ function MathAddSubtract() {
             </div>
 
             {/* Main Content Area */}
-            <div style={{ width: '100%', padding: '0 20px', boxSizing: 'border-box' }}>
+            <div className="math-add-content-wrap" style={{ width: '100%', padding: '0 20px', boxSizing: 'border-box' }}>
                 {/* Tabs */}
                 <div className="lab-tabs">
                     <button className={`lab-tab ${activeTab === 'add' ? 'active' : ''}`} onClick={() => setActiveTab('add')}>➕ 加法 (合起来)</button>
@@ -1836,22 +1908,165 @@ function MathAddSubtract() {
                     align-items: center;
                     gap: 10px;
                 }
+                .math-add-mobile-actions,
+                .math-add-mobile-actions-spacer {
+                    display: none;
+                }
 
                 /* Mobile Responsive Styles */
                 @media (max-width: 768px) {
+                    .math-add-subtract-page {
+                        padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+                    }
+                    .math-add-nav {
+                        padding: 12px 14px 8px !important;
+                    }
+                    .math-add-page-header {
+                        margin-bottom: 12px !important;
+                        padding: 0 14px !important;
+                    }
+                    .math-add-page-header h1 {
+                        margin-bottom: 10px !important;
+                        font-size: 24px !important;
+                        letter-spacing: 0 !important;
+                    }
+                    .math-add-icon-row {
+                        gap: 8px !important;
+                    }
+                    .math-add-icon-row > span {
+                        width: 100%;
+                        font-size: 13px !important;
+                    }
+                    .math-add-icon-row button {
+                        min-width: 44px !important;
+                        min-height: 44px !important;
+                        padding: 4px 10px !important;
+                        border-radius: 12px !important;
+                        font-size: 24px !important;
+                    }
+                    .math-add-content-wrap {
+                        padding: 0 10px !important;
+                    }
                     .lab-tabs {
-                        flex-direction: column;
-                        align-items: stretch;
-                        gap: 10px;
-                        padding: 0 15px;
+                        position: sticky;
+                        top: 0;
+                        z-index: 20;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                        gap: 8px;
+                        margin: 0 -10px 10px;
+                        padding: 8px 10px;
+                        overflow-x: auto;
+                        background: rgba(232, 245, 233, 0.92);
+                        backdrop-filter: blur(10px);
+                        scrollbar-width: none;
+                    }
+                    .lab-tabs::-webkit-scrollbar {
+                        display: none;
                     }
                     .lab-tab {
                         text-align: center;
-                        padding: 14px 20px;
-                        font-size: 16px;
+                        flex: 0 0 auto;
+                        padding: 9px 14px;
+                        font-size: 14px;
+                        border-radius: 12px;
+                        white-space: nowrap;
                     }
                     .lab-content {
-                        padding: 15px 10px;
+                        min-height: auto;
+                        padding: 8px 0 0;
+                    }
+                    .addition-module,
+                    .subtraction-module {
+                        padding: 0 !important;
+                    }
+                    .addition-main-stage {
+                        flex-wrap: nowrap !important;
+                        gap: 8px !important;
+                        margin-bottom: 8px !important;
+                        padding: 0 !important;
+                    }
+                    .addition-main-stage > div {
+                        min-width: 0 !important;
+                        gap: 6px !important;
+                    }
+                    .addition-grid-left,
+                    .addition-grid-right {
+                        max-width: 132px !important;
+                        padding: 8px !important;
+                        gap: 5px !important;
+                        border-radius: 14px !important;
+                    }
+                    .addition-grid-left > div,
+                    .addition-grid-right > div {
+                        font-size: 23px !important;
+                    }
+                    .math-add-pile {
+                        max-width: 320px !important;
+                        padding: 14px !important;
+                        gap: 8px !important;
+                        border-radius: 14px !important;
+                    }
+                    .math-add-pile .math-item {
+                        width: 44px !important;
+                        height: 44px !important;
+                        justify-self: center;
+                        align-self: center;
+                        font-size: 27px !important;
+                    }
+                    .addition-equation {
+                        margin: 8px 0 !important;
+                        font-size: 31px !important;
+                    }
+                    .addition-number-selectors {
+                        gap: 8px !important;
+                        margin-bottom: 8px !important;
+                        padding: 0 !important;
+                    }
+                    .addition-number-selectors > div {
+                        min-width: 0 !important;
+                        flex: 1 1 calc(50% - 8px) !important;
+                        padding: 10px 12px !important;
+                        border-radius: 14px !important;
+                    }
+                    .addition-controls,
+                    .subtraction-controls {
+                        display: none !important;
+                    }
+                    .subtraction-narration {
+                        max-width: 100% !important;
+                        padding: 10px 14px !important;
+                        margin-bottom: 10px !important;
+                        border-radius: 14px !important;
+                        font-size: 15px !important;
+                        line-height: 1.35 !important;
+                    }
+                    .subtraction-tray {
+                        max-width: 330px !important;
+                        gap: 6px !important;
+                        padding: 10px !important;
+                        margin-bottom: 8px !important;
+                        border-radius: 14px !important;
+                    }
+                    .subtraction-tray .sub-icon {
+                        font-size: 30px !important;
+                    }
+                    .subtraction-equation {
+                        margin: 4px 0 !important;
+                        font-size: 34px !important;
+                    }
+                    .subtraction-status {
+                        margin-bottom: 10px !important;
+                        font-size: 14px !important;
+                    }
+                    .subtraction-total-selector {
+                        padding: 10px 14px !important;
+                        margin-bottom: 10px !important;
+                        border-radius: 14px !important;
+                    }
+                    .math-add-mobile-actions,
+                    .math-add-mobile-actions-spacer {
+                        display: block;
                     }
                     
                     /* Bonds Module - uses scale due to absolute positioning */
@@ -1869,8 +2084,10 @@ function MathAddSubtract() {
                         transform: scale(0.58);
                         transform-origin: top center;
                         margin-bottom: -150px !important;
-                        width: 100% !important;
-                        height: auto !important;
+                        width: 600px !important;
+                        height: 420px !important;
+                        flex: 0 0 600px !important;
+                        overflow: visible !important;
                     }
                     .bonds-narration {
                         font-size: 16px !important;
